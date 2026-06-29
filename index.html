@@ -35,10 +35,6 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--dark);color:va
 .sdot.syncing{background:var(--gold);animation:pulse .8s infinite}
 .sdot.err{background:var(--danger)}
 .sync-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:5px 14px;display:flex;justify-content:space-between;font-size:10px;color:var(--muted)}
-.ctabs{display:flex;background:var(--surface);border-bottom:1px solid var(--border)}
-.ctab{flex:1;padding:10px 5px;text-align:center;cursor:pointer;font-size:11px;font-weight:600;color:var(--muted);border-bottom:3px solid transparent;transition:all .2s}
-.ctab.active{color:var(--gold);border-bottom-color:var(--gold);background:rgba(192,96,128,.08)}
-.ctab small{display:block;font-size:9px;font-weight:400;margin-top:1px;opacity:.8}
 .bnav{position:fixed;bottom:0;left:0;right:0;z-index:150;background:var(--surface);border-top:2px solid var(--border);display:flex}
 .ni-item{flex:1;padding:8px 4px 6px;text-align:center;cursor:pointer;font-size:9px;color:var(--muted);transition:color .2s}
 .ni-item .ni{font-size:18px;display:block;margin-bottom:2px}
@@ -109,35 +105,26 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--dark);color:va
 </head>
 <body>
 
-<!-- LOGIN -->
 <div id="login-screen">
   <div class="logo">🎂</div>
   <div class="app-title">Dulce Sofía</div>
   <div class="app-sub">Pastelería — Inventario de Insumos</div>
   <div class="login-card">
     <h2>☁️ Conectar con Firebase</h2>
-    <p>Ingresa los datos de tu proyecto Firebase. Se guardan en este dispositivo para entrar automáticamente la próxima vez.</p>
+    <p>Ingresa los datos de tu proyecto Firebase. Se guardan en este dispositivo automáticamente.</p>
     <label class="lbl">API Key</label>
     <input class="linput" id="fb-apikey" placeholder="AIzaSy..." autocomplete="off" spellcheck="false">
     <label class="lbl">Project ID</label>
-    <input class="linput" id="fb-projectid" placeholder="dulce-sofia-xxxxx" autocomplete="off" spellcheck="false">
+    <input class="linput" id="fb-projectid" placeholder="dulcesofia-xxxxx" autocomplete="off" spellcheck="false">
     <button class="btn-login" id="btn-login" onclick="doLogin()">Conectar →</button>
     <div class="login-status" id="login-status"></div>
     <div class="hint-box">
-      <strong>Cómo obtener los datos (8 min · gratis con Gmail):</strong>
-      <div style="margin-top:9px">
-        <div class="hstep"><span class="hnum">1</span><span>Ve a <a href="https://firebase.google.com" target="_blank">firebase.google.com</a> → <strong>Ir a la consola</strong> con tu Gmail</span></div>
-        <div class="hstep"><span class="hnum">2</span><span>Clic en <strong>Agregar proyecto</strong> → nombre: "DulceSofia" → desactiva Analytics → Crear</span></div>
-        <div class="hstep"><span class="hnum">3</span><span><strong>Firestore Database</strong> → Crear base de datos → Modo prueba → Siguiente → Habilitar</span></div>
-        <div class="hstep"><span class="hnum">4</span><span>En Reglas → reemplaza todo por: <strong>allow read, write: if true;</strong> → Publicar</span></div>
-        <div class="hstep"><span class="hnum">5</span><span>Vuelve al inicio del proyecto → ícono <strong>&lt;/&gt;</strong> → registra app → copia <strong>apiKey</strong> y <strong>projectId</strong></span></div>
-        <div class="hstep"><span class="hnum">6</span><span>Pega aquí arriba y toca <strong>Conectar</strong></span></div>
-      </div>
+      <strong>Datos de Firebase (los mismos que ya tienes):</strong>
+      <div style="margin-top:8px;font-size:11px;color:var(--muted)">Usa el apiKey y projectId del proyecto DulceSofia que ya configuraste. Si los olvidaste: Firebase Console → DulceSofia → Configuración ⚙️ → Tu app web.</div>
     </div>
   </div>
 </div>
 
-<!-- MAIN APP -->
 <div id="main-app" style="display:none">
   <div class="topbar">
     <span style="font-size:20px">🎂</span>
@@ -148,7 +135,6 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--dark);color:va
     </div>
   </div>
   <div class="sync-bar"><span id="sync-label">Conectando...</span></div>
-
   <div class="bnav">
     <div class="ni-item active" onclick="showPage('inv')" id="nav-inv"><span class="ni">📋</span>Inventario</div>
     <div class="ni-item" onclick="showPage('prices')" id="nav-prices"><span class="ni">💰</span>Precios</div>
@@ -156,11 +142,10 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--dark);color:va
     <div class="ni-item" onclick="showPage('settings')" id="nav-settings"><span class="ni">⚙️</span>Config</div>
   </div>
 
-  <!-- INVENTARIO -->
   <div class="page active" id="page-inv">
     <div class="controls">
       <div class="srow">
-        <input type="search" class="sbox" id="search-input" placeholder="🔍 Buscar insumo..." oninput="renderProds()" autocomplete="off" autocorrect="off" spellcheck="false">
+        <input type="search" class="sbox" id="search-input" placeholder="🔍 Buscar insumo..." autocomplete="off" autocorrect="off" spellcheck="false">
         <button class="mic-btn" id="mic-btn" onclick="toggleVoice()">🎙️</button>
       </div>
       <div class="catscroll" id="cat-scroll"></div>
@@ -168,29 +153,26 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--dark);color:va
     <div class="plist" id="prod-list"></div>
   </div>
 
-  <!-- PRECIOS -->
   <div class="page" id="page-prices">
     <div style="display:flex;gap:8px;padding:10px 12px 4px">
       <button onclick="openCalc()" style="flex:1;background:var(--gold);color:#fff;border:none;padding:10px 6px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer">🧮 Calcular<br><span style="font-size:10px;font-weight:400">precio/unidad</span></button>
       <button onclick="openPhoto()" style="flex:1;background:var(--teal);color:#fff;border:none;padding:10px 6px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer">📷 Foto factura<br><span style="font-size:10px;font-weight:400">actualizar automático</span></button>
     </div>
     <div style="padding:6px 12px 8px">
-      <input type="search" class="sbox" style="width:100%" id="pr-search" placeholder="🔍 Buscar insumo..." oninput="renderPrices()" autocomplete="off" autocorrect="off" spellcheck="false">
+      <input type="search" class="sbox" style="width:100%" id="pr-search" placeholder="🔍 Buscar insumo..." autocomplete="off" autocorrect="off" spellcheck="false">
     </div>
     <div id="pr-list"></div>
   </div>
 
-  <!-- HISTORIAL -->
   <div class="page" id="page-history">
     <div class="stitle">Inventarios guardados ☁️</div>
     <div id="hist-list"></div>
   </div>
 
-  <!-- CONFIG -->
   <div class="page" id="page-settings">
     <div class="stitle" style="padding-top:13px">Sincronización</div>
     <div class="ss">
-      <h3>☁️ Firebase</h3>
+      <h3>☁️ Estado Firebase</h3>
       <div style="font-size:11px;color:var(--muted);margin-bottom:11px;line-height:1.6" id="sess-info">—</div>
       <button class="btn btn-teal" onclick="forcSync()">🔄 Cargar datos más recientes</button>
       <button class="btn btn-gold" onclick="saveSession()">💾 Guardar inventario en historial</button>
@@ -200,30 +182,34 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--dark);color:va
     <div class="stitle">Agregar Insumo Nuevo</div>
     <div class="ss">
       <div class="fg"><label>Nombre</label><input type="text" id="new-name" placeholder="Ej: Harina integral"></div>
-      <div class="fr">
-        <div class="fg"><label>Categoría</label>
-          <select id="new-cat">
-            <option>INSUMOS PASTELERÍA</option>
-            <option>GRECA (CAFÉ)</option>
-            <option>BEBIDAS NEVERA</option>
-          </select>
+      <div class="fg">
+        <label>Categoría</label>
+        <div style="display:flex;gap:6px;align-items:center">
+          <select id="new-cat" style="flex:1;background:var(--dark);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:12px;outline:none"></select>
+          <button onclick="addCategoryPrompt()" style="background:var(--teal);color:#fff;border:none;padding:8px 10px;border-radius:8px;font-size:12px;cursor:pointer;white-space:nowrap">+ Nueva</button>
         </div>
+      </div>
+      <div class="fr">
         <div class="fg"><label>Unidad</label>
-          <select id="new-unit">
+          <select id="new-unit" style="background:var(--dark);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:12px;outline:none;width:100%">
             <option value="g">Gramos (g)</option>
             <option value="ml">Mililitros (ml)</option>
             <option value="Und">Unidad (Und)</option>
             <option value="cm">Centímetros (cm)</option>
             <option value="mt">Metros (mt)</option>
+            <option value="Paquete">Paquete</option>
+            <option value="Caja">Caja</option>
+            <option value="Rollo">Rollo</option>
+            <option value="Tarro">Tarro</option>
           </select>
         </div>
+        <div class="fg"><label>Costo por unidad ($)</label><input type="number" id="new-cost" placeholder="0" step="0.0001" inputmode="decimal"></div>
       </div>
-      <div class="fg"><label>Costo por unidad ($)</label><input type="number" id="new-cost" placeholder="0" step="0.01" inputmode="decimal"></div>
       <button class="btn btn-teal" onclick="addProduct()">➕ Agregar Insumo</button>
     </div>
     <div class="stitle">Informe Excel</div>
     <div class="ss">
-      <p style="font-size:11px;color:var(--muted);margin-bottom:11px">Excel ejecutivo con resumen por categoría y detalle completo de insumos.</p>
+      <p style="font-size:11px;color:var(--muted);margin-bottom:11px">Excel ejecutivo con resumen por categoría y detalle completo.</p>
       <button class="btn btn-gold" onclick="exportExcel()">📊 Generar Informe Excel (.xlsx)</button>
     </div>
   </div>
@@ -236,9 +222,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--dark);color:va
       <h2 style="font-size:15px;color:var(--gold)">🧮 Calculadora Precio/Unidad</h2>
       <button onclick="closeCalc()" style="background:var(--card);border:none;color:var(--text);padding:6px 12px;border-radius:8px;cursor:pointer">✕</button>
     </div>
-    <p style="font-size:11px;color:var(--muted);margin-bottom:13px">Precio total del empaque ÷ cantidad = costo por unidad mínima.</p>
-    <div class="fg">
-      <label>Insumo</label>
+    <div class="fg"><label>Insumo</label>
       <input type="search" id="calc-s" placeholder="Buscar insumo..." oninput="searchCalc()" autocomplete="off" style="width:100%;background:var(--dark);border:1px solid var(--border);color:var(--text);padding:9px 11px;border-radius:9px;font-size:13px;outline:none">
       <div id="calc-res" style="background:var(--dark);border:1px solid var(--border);border-top:none;border-radius:0 0 9px 9px;max-height:150px;overflow-y:auto;display:none"></div>
       <div id="calc-sel" style="display:none;margin-top:7px;background:rgba(192,96,128,.1);border:1px solid var(--gold);border-radius:8px;padding:7px 10px;font-size:11px;color:var(--gold)"></div>
@@ -247,8 +231,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--dark);color:va
       <div class="fg" style="margin:0"><label>Precio total ($)</label><input type="number" id="calc-p" placeholder="142000" inputmode="decimal" oninput="calcR()" style="width:100%;background:var(--dark);border:1px solid var(--border);color:var(--text);padding:9px 11px;border-radius:9px;font-size:14px;font-weight:700;outline:none"></div>
       <div class="fg" style="margin:0"><label>Cantidad del empaque</label><input type="number" id="calc-q" placeholder="20000" inputmode="decimal" oninput="calcR()" style="width:100%;background:var(--dark);border:1px solid var(--border);color:var(--text);padding:9px 11px;border-radius:9px;font-size:14px;font-weight:700;outline:none"></div>
     </div>
-    <div class="fg">
-      <label>Unidad</label>
+    <div class="fg"><label>Unidad</label>
       <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px">
         <button class="uchip active" data-m="1000" onclick="selU(this,'kg → cada gramo')">kg → g</button>
         <button class="uchip" data-m="1" onclick="selU(this,'g → cada gramo')">g → g</button>
@@ -277,13 +260,12 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--dark);color:va
     <div id="ph-drop" style="border:2px dashed var(--teal);border-radius:12px;padding:24px;text-align:center;cursor:pointer;margin-bottom:12px" onclick="document.getElementById('ph-file').click()">
       <div style="font-size:40px;margin-bottom:8px">📸</div>
       <div style="font-size:13px;font-weight:700;color:var(--teal)">Toca para tomar foto</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:3px">Facturas, remisiones, recibos</div>
     </div>
     <input type="file" id="ph-file" accept="image/*" capture="environment" style="display:none" onchange="handlePhoto(this)">
     <div id="ph-prev" style="display:none;margin-bottom:12px"><img id="ph-img" style="width:100%;border-radius:10px;max-height:200px;object-fit:cover"></div>
     <div id="ph-load" style="display:none;text-align:center;padding:16px">
       <div style="font-size:30px;animation:spin 1s linear infinite;display:inline-block">⚙️</div>
-      <div style="font-size:13px;color:var(--teal);margin-top:8px">Leyendo factura con IA...</div>
+      <div style="font-size:13px;color:var(--teal);margin-top:8px">Leyendo factura...</div>
     </div>
     <div id="ph-out" style="display:none">
       <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:9px">Insumos encontrados:</div>
@@ -299,22 +281,46 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--dark);color:va
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import { getFirestore, doc, setDoc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
-const PRODUCTS_DB = [{"id":1,"description":"Aceite","category":"INSUMOS PASTELERÍA","unit":"ml","cost":7.1},{"id":2,"description":"Agua","category":"INSUMOS PASTELERÍA","unit":"g","cost":1.334},{"id":3,"description":"agua botellax600","category":"BEBIDAS NEVERA","unit":"Und","cost":1333.3333},{"id":4,"description":"Alcohol","category":"INSUMOS PASTELERÍA","unit":"g","cost":7.9481},{"id":5,"description":"Almendras","category":"INSUMOS PASTELERÍA","unit":"g","cost":24.0},{"id":6,"description":"Ambientador","category":"INSUMOS PASTELERÍA","unit":"g","cost":2.5455},{"id":7,"description":"arandanos","category":"INSUMOS PASTELERÍA","unit":"g","cost":58.3333},{"id":8,"description":"Arepa Harina","category":"INSUMOS PASTELERÍA","unit":"g","cost":30.4},{"id":9,"description":"Arequipe","category":"INSUMOS PASTELERÍA","unit":"g","cost":11.228},{"id":10,"description":"Avena en hojuelas","category":"INSUMOS PASTELERÍA","unit":"g","cost":32.0},{"id":11,"description":"azucar sobres","category":"INSUMOS PASTELERÍA","unit":"Und","cost":35.0},{"id":12,"description":"Azúcar corriente","category":"INSUMOS PASTELERÍA","unit":"g","cost":3.24},{"id":13,"description":"Azúcar pulverizada R/paila","category":"INSUMOS PASTELERÍA","unit":"g","cost":5.4},{"id":14,"description":"Azúcar pulverizada Santillana","category":"INSUMOS PASTELERÍA","unit":"g","cost":6.5298},{"id":15,"description":"Banano","category":"INSUMOS PASTELERÍA","unit":"g","cost":3.0},{"id":16,"description":"Bandeja negra #1","category":"INSUMOS PASTELERÍA","unit":"Und","cost":108.5},{"id":17,"description":"Barquillo piazza","category":"INSUMOS PASTELERÍA","unit":"Und","cost":225.0},{"id":18,"description":"Bicarbonato de sodio","category":"INSUMOS PASTELERÍA","unit":"g","cost":5.9},{"id":19,"description":"Blonda # 15.5","category":"INSUMOS PASTELERÍA","unit":"Und","cost":135.0},{"id":20,"description":"Blonda # 17","category":"INSUMOS PASTELERÍA","unit":"Und","cost":156.75},{"id":21,"description":"Blonda # 21","category":"INSUMOS PASTELERÍA","unit":"Und","cost":234.75},{"id":22,"description":"Blonda # 24.5","category":"INSUMOS PASTELERÍA","unit":"Und","cost":223.0},{"id":23,"description":"Blonda # 26","category":"INSUMOS PASTELERÍA","unit":"Und","cost":360.5},{"id":24,"description":"Blonda # 30","category":"INSUMOS PASTELERÍA","unit":"Und","cost":448.5},{"id":25,"description":"Bolsa 7x12","category":"INSUMOS PASTELERÍA","unit":"Und","cost":18.5},{"id":26,"description":"Bolsa aluminio","category":"INSUMOS PASTELERÍA","unit":"Und","cost":24.6},{"id":27,"description":"Bolsa p&P","category":"INSUMOS PASTELERÍA","unit":"Und","cost":147.0},{"id":28,"description":"Bolsa t15","category":"INSUMOS PASTELERÍA","unit":"Und","cost":64.0},{"id":29,"description":"Bolsa t25","category":"INSUMOS PASTELERÍA","unit":"Und","cost":90.0},{"id":30,"description":"Bolsa t30","category":"INSUMOS PASTELERÍA","unit":"Und","cost":30.0},{"id":31,"description":"Bolsa t40","category":"INSUMOS PASTELERÍA","unit":"Und","cost":120.0},{"id":32,"description":"bretaña 1.5","category":"BEBIDAS NEVERA","unit":"Und","cost":3750.0},{"id":33,"description":"cafe en grano","category":"GRECA (CAFÉ)","unit":"g","cost":49.6},{"id":34,"description":"Café instantaneo","category":"GRECA (CAFÉ)","unit":"g","cost":131.502},{"id":35,"description":"Caja maletin 1/2 Distriuno","category":"INSUMOS PASTELERÍA","unit":"Und","cost":1450.0},{"id":36,"description":"Caja maletin 1/2 Isafrut","category":"INSUMOS PASTELERÍA","unit":"Und","cost":1250.0},{"id":37,"description":"Caja maletin 1/4","category":"INSUMOS PASTELERÍA","unit":"Und","cost":1700.0},{"id":38,"description":"Caja maletin dos libras","category":"INSUMOS PASTELERÍA","unit":"Und","cost":3850.0},{"id":39,"description":"Caja maletin libra","category":"INSUMOS PASTELERÍA","unit":"Und","cost":2300.0},{"id":40,"description":"Caja maletin libra y media","category":"INSUMOS PASTELERÍA","unit":"Und","cost":3200.0},{"id":41,"description":"Caja volcán","category":"INSUMOS PASTELERÍA","unit":"Und","cost":1312.5},{"id":42,"description":"Canela en astilla","category":"INSUMOS PASTELERÍA","unit":"g","cost":166.6667},{"id":43,"description":"Canela polvo","category":"INSUMOS PASTELERÍA","unit":"g","cost":62.0},{"id":44,"description":"Capacillo #2","category":"INSUMOS PASTELERÍA","unit":"Und","cost":13.0},{"id":45,"description":"Capacillo #5","category":"INSUMOS PASTELERÍA","unit":"Und","cost":16.5},{"id":46,"description":"Cartulina escarchada","category":"INSUMOS PASTELERÍA","unit":"Und","cost":3100.0},{"id":47,"description":"Cerezas promedio x unidad 3.6g","category":"INSUMOS PASTELERÍA","unit":"Und","cost":175.4123},{"id":48,"description":"cerveza club colombia","category":"BEBIDAS NEVERA","unit":"Und","cost":3416.6667},{"id":49,"description":"Chips de chocolate blanco","category":"INSUMOS PASTELERÍA","unit":"g","cost":41.986},{"id":50,"description":"Chips de chocolate negro","category":"INSUMOS PASTELERÍA","unit":"g","cost":33.9},{"id":51,"description":"Chocolate barra blanco puratos","category":"INSUMOS PASTELERÍA","unit":"g","cost":33.0},{"id":52,"description":"Chocolate barra negro puratos","category":"INSUMOS PASTELERÍA","unit":"g","cost":26.5},{"id":53,"description":"Chocolate ferrero","category":"INSUMOS PASTELERÍA","unit":"Und","cost":4700.0},{"id":54,"description":"Chocolate monedas","category":"INSUMOS PASTELERÍA","unit":"g","cost":25.4},{"id":55,"description":"Chocubierta chocolate liquido","category":"INSUMOS PASTELERÍA","unit":"g","cost":26.75},{"id":56,"description":"Cinta estampada 50 yardas","category":"INSUMOS PASTELERÍA","unit":"cm","cost":0.864},{"id":57,"description":"Cinta impronta","category":"INSUMOS PASTELERÍA","unit":"cm","cost":8.0},{"id":58,"description":"Cinta metalizada 25 yardas","category":"INSUMOS PASTELERÍA","unit":"cm","cost":0.4374},{"id":59,"description":"Cinta metalizada 50 yardas","category":"INSUMOS PASTELERÍA","unit":"cm","cost":0.2187},{"id":60,"description":"Cinta texturizada escarchada 50 yardas","category":"INSUMOS PASTELERÍA","unit":"cm","cost":0.2187},{"id":61,"description":"CMC","category":"INSUMOS PASTELERÍA","unit":"g","cost":50.4},{"id":62,"description":"Cobertura blanca","category":"INSUMOS PASTELERÍA","unit":"g","cost":40.0},{"id":63,"description":"Cobertura negra","category":"INSUMOS PASTELERÍA","unit":"g","cost":8.75},{"id":64,"description":"coca-cola 1.5","category":"BEBIDAS NEVERA","unit":"Und","cost":5416.6667},{"id":65,"description":"coca-cola personal x400","category":"BEBIDAS NEVERA","unit":"Und","cost":2500.0},{"id":66,"description":"Cocoa","category":"INSUMOS PASTELERÍA","unit":"g","cost":59.151},{"id":67,"description":"Colmaíz","category":"INSUMOS PASTELERÍA","unit":"g","cost":5.8},{"id":68,"description":"Color caramelo","category":"INSUMOS PASTELERÍA","unit":"g","cost":12.7},{"id":69,"description":"Color en gel varios colores","category":"INSUMOS PASTELERÍA","unit":"ml","cost":366.6667},{"id":70,"description":"Color gotero varios colores","category":"INSUMOS PASTELERÍA","unit":"ml","cost":216.6667},{"id":71,"description":"Concentrado de arándanos","category":"INSUMOS PASTELERÍA","unit":"g","cost":78.5},{"id":72,"description":"Concentrado de limón","category":"INSUMOS PASTELERÍA","unit":"g","cost":44.0},{"id":73,"description":"Concentrado de naranja","category":"INSUMOS PASTELERÍA","unit":"g","cost":68.7963},{"id":74,"description":"Crema base","category":"INSUMOS PASTELERÍA","unit":"g","cost":17.5},{"id":75,"description":"Crema de leche","category":"INSUMOS PASTELERÍA","unit":"g","cost":17.14},{"id":76,"description":"Cuchara Bon yurt","category":"INSUMOS PASTELERÍA","unit":"Und","cost":75.0},{"id":77,"description":"cuchara peq x100","category":"INSUMOS PASTELERÍA","unit":"Und","cost":26.0},{"id":78,"description":"Cuchara sopera","category":"INSUMOS PASTELERÍA","unit":"Und","cost":65.1},{"id":79,"description":"desengrasante","category":"INSUMOS PASTELERÍA","unit":"ml","cost":3.4673},{"id":80,"description":"deterpisos ambientador","category":"INSUMOS PASTELERÍA","unit":"ml","cost":2.7387},{"id":81,"description":"Dióxido de titanio","category":"INSUMOS PASTELERÍA","unit":"g","cost":146.4},{"id":82,"description":"Domo #17","category":"INSUMOS PASTELERÍA","unit":"Und","cost":1542.0},{"id":83,"description":"Domo #22","category":"INSUMOS PASTELERÍA","unit":"Und","cost":2589.0},{"id":84,"description":"Domo #28 libra","category":"INSUMOS PASTELERÍA","unit":"Und","cost":2862.0},{"id":85,"description":"Domo 1 1/2","category":"INSUMOS PASTELERÍA","unit":"Und","cost":4950.0},{"id":86,"description":"Domo cupcake","category":"INSUMOS PASTELERÍA","unit":"Und","cost":428.75},{"id":87,"description":"Domo cupcake x 6","category":"INSUMOS PASTELERÍA","unit":"Und","cost":1650.0},{"id":88,"description":"domo mil hojas","category":"INSUMOS PASTELERÍA","unit":"Und","cost":350.0},{"id":89,"description":"domoMinipack cuadrado caja genovesa","category":"INSUMOS PASTELERÍA","unit":"Und","cost":629.5},{"id":90,"description":"Durazno","category":"INSUMOS PASTELERÍA","unit":"g","cost":13.7805},{"id":91,"description":"Emulsificante","category":"INSUMOS PASTELERÍA","unit":"g","cost":26.16},{"id":92,"description":"Esencia de arequipe","category":"INSUMOS PASTELERÍA","unit":"ml","cost":33.0},{"id":93,"description":"Esencia de café Promapan","category":"GRECA (CAFÉ)","unit":"ml","cost":33.0},{"id":94,"description":"Esencia de café Santillana","category":"GRECA (CAFÉ)","unit":"ml","cost":30.0},{"id":95,"description":"Esencia de canela","category":"INSUMOS PASTELERÍA","unit":"ml","cost":33.0},{"id":96,"description":"Esencia de chocolate","category":"INSUMOS PASTELERÍA","unit":"ml","cost":20.1036},{"id":97,"description":"Esencia de crema de whiskey","category":"INSUMOS PASTELERÍA","unit":"ml","cost":33.0},{"id":98,"description":"Esencia de hinojo","category":"INSUMOS PASTELERÍA","unit":"ml","cost":35.5},{"id":99,"description":"Esencia de ponqué","category":"INSUMOS PASTELERÍA","unit":"ml","cost":33.0},{"id":100,"description":"Esencia de vainilla","category":"INSUMOS PASTELERÍA","unit":"ml","cost":20.1036},{"id":101,"description":"Esencia naranja","category":"INSUMOS PASTELERÍA","unit":"ml","cost":22.5974},{"id":102,"description":"Esencia ron con pasas","category":"INSUMOS PASTELERÍA","unit":"ml","cost":33.0},{"id":103,"description":"Estras cm","category":"INSUMOS PASTELERÍA","unit":"cm","cost":55.0},{"id":104,"description":"Facturero","category":"INSUMOS PASTELERÍA","unit":"Und","cost":2500.0},{"id":105,"description":"Feliz cum Volcan","category":"INSUMOS PASTELERÍA","unit":"Und","cost":2700.0},{"id":106,"description":"Foami liso pliego","category":"INSUMOS PASTELERÍA","unit":"Und","cost":3600.0},{"id":107,"description":"fresa grande","category":"INSUMOS PASTELERÍA","unit":"Und","cost":476.1905},{"id":108,"description":"fresa mediana","category":"INSUMOS PASTELERÍA","unit":"Und","cost":204.5455},{"id":109,"description":"fresa para mermelada","category":"INSUMOS PASTELERÍA","unit":"g","cost":10.989},{"id":110,"description":"Fruta cristalizada","category":"INSUMOS PASTELERÍA","unit":"g","cost":13.2},{"id":111,"description":"Frutos amarillos para mermelada","category":"INSUMOS PASTELERÍA","unit":"g","cost":9.3284},{"id":112,"description":"Frutos rojos para mermelada","category":"INSUMOS PASTELERÍA","unit":"g","cost":16.4534},{"id":113,"description":"Fécula","category":"INSUMOS PASTELERÍA","unit":"g","cost":4.64},{"id":114,"description":"Galleta minichips","category":"INSUMOS PASTELERÍA","unit":"Und","cost":93.75},{"id":115,"description":"Galleta recreo","category":"INSUMOS PASTELERÍA","unit":"g","cost":20.7407},{"id":116,"description":"Galleta triturada","category":"INSUMOS PASTELERÍA","unit":"g","cost":30.926},{"id":117,"description":"gaseosa 2.5 postobon","category":"BEBIDAS NEVERA","unit":"Und","cost":4587.5},{"id":118,"description":"Gelatina sin sabor","category":"INSUMOS PASTELERÍA","unit":"g","cost":72.0},{"id":119,"description":"Glaseado","category":"INSUMOS PASTELERÍA","unit":"g","cost":7.92},{"id":120,"description":"Glicerina","category":"INSUMOS PASTELERÍA","unit":"g","cost":13.9447},{"id":121,"description":"Glucosa","category":"INSUMOS PASTELERÍA","unit":"g","cost":16.6},{"id":122,"description":"Gragea","category":"INSUMOS PASTELERÍA","unit":"g","cost":10.8},{"id":123,"description":"Granulado chocolate","category":"INSUMOS PASTELERÍA","unit":"g","cost":12.2},{"id":124,"description":"Granulado de colores m&m","category":"INSUMOS PASTELERÍA","unit":"g","cost":77.178},{"id":125,"description":"Harina de almendras","category":"INSUMOS PASTELERÍA","unit":"g","cost":68.0},{"id":126,"description":"Harina haz de oros","category":"INSUMOS PASTELERÍA","unit":"g","cost":2.72},{"id":127,"description":"Hidrogenada Palmares","category":"INSUMOS PASTELERÍA","unit":"g","cost":7.7333},{"id":128,"description":"hipoclorito","category":"INSUMOS PASTELERÍA","unit":"ml","cost":3.5176},{"id":129,"description":"Huevos","category":"INSUMOS PASTELERÍA","unit":"g","cost":8.6667},{"id":130,"description":"jabon de manos","category":"INSUMOS PASTELERÍA","unit":"ml","cost":4.4103},{"id":131,"description":"jabon neutro","category":"INSUMOS PASTELERÍA","unit":"ml","cost":4.4472},{"id":132,"description":"Leche en polvo","category":"INSUMOS PASTELERÍA","unit":"g","cost":23.3333},{"id":133,"description":"Leche líquida","category":"INSUMOS PASTELERÍA","unit":"ml","cost":3.75},{"id":134,"description":"Licor de café","category":"GRECA (CAFÉ)","unit":"g","cost":30.0},{"id":135,"description":"Limón","category":"INSUMOS PASTELERÍA","unit":"Und","cost":200.0},{"id":136,"description":"Lámina icopor #20","category":"INSUMOS PASTELERÍA","unit":"Und","cost":8500.0},{"id":137,"description":"Mamut","category":"INSUMOS PASTELERÍA","unit":"Und","cost":180.0},{"id":138,"description":"Mantequilla","category":"INSUMOS PASTELERÍA","unit":"g","cost":48.6},{"id":139,"description":"Maní","category":"INSUMOS PASTELERÍA","unit":"g","cost":17.0},{"id":140,"description":"maracuya fruta","category":"INSUMOS PASTELERÍA","unit":"g","cost":20.7491},{"id":141,"description":"Margarina 5A","category":"INSUMOS PASTELERÍA","unit":"g","cost":9.2667},{"id":142,"description":"Merengue","category":"INSUMOS PASTELERÍA","unit":"g","cost":30.0},{"id":143,"description":"Mermelada de durazno","category":"INSUMOS PASTELERÍA","unit":"g","cost":9.26},{"id":144,"description":"mezclador de madera","category":"INSUMOS PASTELERÍA","unit":"Und","cost":8.2},{"id":145,"description":"Molde aluminio mini lasagna","category":"INSUMOS PASTELERÍA","unit":"Und","cost":270.0},{"id":146,"description":"Mora","category":"INSUMOS PASTELERÍA","unit":"g","cost":9.29},{"id":147,"description":"Nuez","category":"INSUMOS PASTELERÍA","unit":"g","cost":76.0},{"id":148,"description":"P.P 4x8","category":"INSUMOS PASTELERÍA","unit":"Und","cost":19.5},{"id":149,"description":"Palillo hamburguesa","category":"INSUMOS PASTELERÍA","unit":"Und","cost":6.5625},{"id":150,"description":"Palo de dientes","category":"INSUMOS PASTELERÍA","unit":"Und","cost":7.5},{"id":151,"description":"Palo pincho 30cm","category":"INSUMOS PASTELERÍA","unit":"Und","cost":61.0},{"id":152,"description":"Papel metalizado pliego","category":"INSUMOS PASTELERÍA","unit":"Und","cost":1300.0},{"id":153,"description":"Pasas","category":"INSUMOS PASTELERÍA","unit":"g","cost":13.5},{"id":154,"description":"Perla dorada #2 precio 1","category":"INSUMOS PASTELERÍA","unit":"g","cost":40.0},{"id":155,"description":"Perla dorada #2 precio 2","category":"INSUMOS PASTELERÍA","unit":"g","cost":45.0},{"id":156,"description":"Perla dorada #4","category":"INSUMOS PASTELERÍA","unit":"g","cost":52.0},{"id":157,"description":"Perla dorada #8","category":"INSUMOS PASTELERÍA","unit":"g","cost":53.6},{"id":158,"description":"piña","category":"INSUMOS PASTELERÍA","unit":"g","cost":5.9795},{"id":159,"description":"Plato pando # 15.5","category":"INSUMOS PASTELERÍA","unit":"Und","cost":120.0},{"id":160,"description":"Polvo dorado","category":"INSUMOS PASTELERÍA","unit":"g","cost":320.0},{"id":161,"description":"Polvo para hornear","category":"INSUMOS PASTELERÍA","unit":"g","cost":20.2},{"id":162,"description":"Portaglobo","category":"INSUMOS PASTELERÍA","unit":"Und","cost":200.0},{"id":163,"description":"Premezcla bizcochuelo","category":"INSUMOS PASTELERÍA","unit":"g","cost":16.0},{"id":164,"description":"Premezcla zanahoria","category":"INSUMOS PASTELERÍA","unit":"g","cost":3.04},{"id":165,"description":"Queso crema","category":"INSUMOS PASTELERÍA","unit":"g","cost":21.275},{"id":166,"description":"Queso cuajada","category":"INSUMOS PASTELERÍA","unit":"g","cost":15.8},{"id":167,"description":"Relleno de maracuyá","category":"INSUMOS PASTELERÍA","unit":"g","cost":9.725},{"id":168,"description":"Relleno fresa","category":"INSUMOS PASTELERÍA","unit":"g","cost":8.0},{"id":169,"description":"Relleno frutos rojos","category":"INSUMOS PASTELERÍA","unit":"g","cost":8.0},{"id":170,"description":"Relleno maracuyá","category":"INSUMOS PASTELERÍA","unit":"g","cost":5.625},{"id":171,"description":"Relleno mora","category":"INSUMOS PASTELERÍA","unit":"g","cost":8.0},{"id":172,"description":"Resma papel carta","category":"INSUMOS PASTELERÍA","unit":"Und","cost":23.6},{"id":173,"description":"Rojo escarlata","category":"INSUMOS PASTELERÍA","unit":"g","cost":49.0},{"id":174,"description":"Sal","category":"INSUMOS PASTELERÍA","unit":"g","cost":3.0},{"id":175,"description":"Semillas de amapola","category":"INSUMOS PASTELERÍA","unit":"g","cost":78.0},{"id":176,"description":"Servilleta","category":"INSUMOS PASTELERÍA","unit":"Und","cost":9.45},{"id":177,"description":"Silicona líquida","category":"INSUMOS PASTELERÍA","unit":"g","cost":35.0},{"id":178,"description":"Sorbato de potasio","category":"INSUMOS PASTELERÍA","unit":"g","cost":34.8},{"id":179,"description":"Tapa bandeja negra-domo","category":"INSUMOS PASTELERÍA","unit":"Und","cost":531.5},{"id":180,"description":"topper comestible","category":"INSUMOS PASTELERÍA","unit":"Und","cost":1250.0},{"id":181,"description":"topper digital cupcake","category":"INSUMOS PASTELERÍA","unit":"Und","cost":583.0},{"id":182,"description":"topper digital tortas","category":"INSUMOS PASTELERÍA","unit":"Und","cost":10000.0},{"id":183,"description":"topper madera","category":"INSUMOS PASTELERÍA","unit":"Und","cost":3000.0},{"id":184,"description":"Topper volcan meme","category":"INSUMOS PASTELERÍA","unit":"Und","cost":3300.0},{"id":185,"description":"Vaso 7 oz","category":"INSUMOS PASTELERÍA","unit":"Und","cost":40.0},{"id":186,"description":"Vela negra","category":"INSUMOS PASTELERÍA","unit":"Und","cost":1575.0},{"id":187,"description":"Vela número","category":"INSUMOS PASTELERÍA","unit":"Und","cost":1750.0},{"id":188,"description":"Vela plateada","category":"INSUMOS PASTELERÍA","unit":"Und","cost":1920.0},{"id":189,"description":"Vela viejito","category":"INSUMOS PASTELERÍA","unit":"Und","cost":4000.0},{"id":190,"description":"Vela volcán","category":"INSUMOS PASTELERÍA","unit":"Und","cost":1250.0},{"id":191,"description":"Vinagre","category":"INSUMOS PASTELERÍA","unit":"ml","cost":2.5126},{"id":192,"description":"Vinipel","category":"INSUMOS PASTELERÍA","unit":"mt","cost":81.5},{"id":193,"description":"Vino","category":"INSUMOS PASTELERÍA","unit":"ml","cost":7.0},{"id":194,"description":"Vittina","category":"INSUMOS PASTELERÍA","unit":"g","cost":11.2},{"id":195,"description":"Zanahoria","category":"INSUMOS PASTELERÍA","unit":"g","cost":6.0},{"id":196,"description":"Zumo de limón","category":"INSUMOS PASTELERÍA","unit":"ml","cost":5.0},{"id":197,"description":"Ácido sorbico","category":"INSUMOS PASTELERÍA","unit":"g","cost":31.3}];
+const PRODUCTS_DB = [{"id":1,"description":"Aceite","category":"INSUMOS PASTELERÍA","unit":"ml","cost":7.1},{"id":2,"description":"Alcohol","category":"INSUMOS PASTELERÍA","unit":"g","cost":7.95},{"id":3,"description":"Almendras","category":"INSUMOS PASTELERÍA","unit":"g","cost":24.0},{"id":4,"description":"Ambientador","category":"INSUMOS PASTELERÍA","unit":"g","cost":2.55},{"id":5,"description":"arandanos","category":"INSUMOS PASTELERÍA","unit":"g","cost":58.33},{"id":6,"description":"Arepa Harina","category":"INSUMOS PASTELERÍA","unit":"g","cost":30.4},{"id":7,"description":"Arequipe","category":"INSUMOS PASTELERÍA","unit":"g","cost":11.228},{"id":8,"description":"Avena en hojuelas","category":"INSUMOS PASTELERÍA","unit":"g","cost":32.0},{"id":9,"description":"Azúcar corriente","category":"INSUMOS PASTELERÍA","unit":"g","cost":3.24},{"id":10,"description":"Azúcar pulverizada R/paila","category":"INSUMOS PASTELERÍA","unit":"g","cost":5.4},{"id":11,"description":"Azúcar pulverizada Santillana","category":"INSUMOS PASTELERÍA","unit":"g","cost":6.53},{"id":12,"description":"Banano","category":"INSUMOS PASTELERÍA","unit":"g","cost":3.0},{"id":13,"description":"Bandeja negra #1","category":"INSUMOS PASTELERÍA","unit":"Und","cost":108.5},{"id":14,"description":"Barquillo piazza","category":"INSUMOS PASTELERÍA","unit":"Und","cost":225.0},{"id":15,"description":"Bicarbonato de sodio","category":"INSUMOS PASTELERÍA","unit":"g","cost":5.9},{"id":16,"description":"Brillo tornasol","category":"INSUMOS PASTELERÍA","unit":"g","cost":26.0},{"id":17,"description":"Café instantaneo","category":"INSUMOS PASTELERÍA","unit":"g","cost":131.5},{"id":18,"description":"Caneca ron","category":"INSUMOS PASTELERÍA","unit":"Und","cost":23000.0},{"id":19,"description":"Canela en astilla","category":"INSUMOS PASTELERÍA","unit":"g","cost":166.67},{"id":20,"description":"Canela polvo","category":"INSUMOS PASTELERÍA","unit":"g","cost":62.0},{"id":21,"description":"Cerezas promedio x unidad 3.6g","category":"INSUMOS PASTELERÍA","unit":"g","cost":32.5},{"id":22,"description":"Chips de chocolate blanco","category":"INSUMOS PASTELERÍA","unit":"g","cost":41.99},{"id":23,"description":"Chips de chocolate negro","category":"INSUMOS PASTELERÍA","unit":"g","cost":33.9},{"id":24,"description":"Chocolate barra blanco puratos","category":"INSUMOS PASTELERÍA","unit":"g","cost":33.0},{"id":25,"description":"Chocolate barra negro puratos","category":"INSUMOS PASTELERÍA","unit":"g","cost":26.5},{"id":26,"description":"Chocolate ferrero","category":"INSUMOS PASTELERÍA","unit":"Und","cost":4700.0},{"id":27,"description":"Chocolate monedas","category":"INSUMOS PASTELERÍA","unit":"g","cost":25.4},{"id":28,"description":"Chocubierta chocolate liquido","category":"INSUMOS PASTELERÍA","unit":"g","cost":26.75},{"id":29,"description":"CMC","category":"INSUMOS PASTELERÍA","unit":"g","cost":50.4},{"id":30,"description":"Cobertura blanca","category":"INSUMOS PASTELERÍA","unit":"g","cost":40.0},{"id":31,"description":"Cobertura negra","category":"INSUMOS PASTELERÍA","unit":"g","cost":8.75},{"id":32,"description":"Cocoa","category":"INSUMOS PASTELERÍA","unit":"g","cost":59.15},{"id":33,"description":"Colmaíz","category":"INSUMOS PASTELERÍA","unit":"g","cost":5.8},{"id":34,"description":"Color caramelo","category":"INSUMOS PASTELERÍA","unit":"g","cost":12.7},{"id":35,"description":"Color en gel varios colores","category":"INSUMOS PASTELERÍA","unit":"ml","cost":366.67},{"id":36,"description":"Color gotero varios colores","category":"INSUMOS PASTELERÍA","unit":"ml","cost":216.67},{"id":37,"description":"Colorante Rojo escarlata","category":"INSUMOS PASTELERÍA","unit":"g","cost":49.0},{"id":38,"description":"Concentrado de arándanos","category":"INSUMOS PASTELERÍA","unit":"g","cost":78.5},{"id":39,"description":"Concentrado de limón","category":"INSUMOS PASTELERÍA","unit":"g","cost":44.0},{"id":40,"description":"Concentrado de naranja","category":"INSUMOS PASTELERÍA","unit":"g","cost":68.8},{"id":41,"description":"Crema base","category":"INSUMOS PASTELERÍA","unit":"g","cost":17.5},{"id":42,"description":"Crema de leche","category":"INSUMOS PASTELERÍA","unit":"g","cost":17.14},{"id":43,"description":"Crema para decorar Kellers x 2 lt","category":"INSUMOS PASTELERÍA","unit":"Tarro","cost":35000.0},{"id":44,"description":"Cucurucho","category":"INSUMOS PASTELERÍA","unit":"Und","cost":220.0},{"id":45,"description":"Dióxido de titanio","category":"INSUMOS PASTELERÍA","unit":"g","cost":146.4},{"id":46,"description":"Durazno","category":"INSUMOS PASTELERÍA","unit":"g","cost":13.78},{"id":47,"description":"Emulsificante","category":"INSUMOS PASTELERÍA","unit":"g","cost":26.16},{"id":48,"description":"Escarcha","category":"INSUMOS PASTELERÍA","unit":"g","cost":26.0},{"id":49,"description":"Esencia de arequipe","category":"INSUMOS PASTELERÍA","unit":"ml","cost":33.0},{"id":50,"description":"Esencia de café Promapan","category":"INSUMOS PASTELERÍA","unit":"ml","cost":33.0},{"id":51,"description":"Esencia de café Santillana","category":"INSUMOS PASTELERÍA","unit":"ml","cost":30.0},{"id":52,"description":"Esencia de canela","category":"INSUMOS PASTELERÍA","unit":"ml","cost":33.0},{"id":53,"description":"Esencia de chocolate","category":"INSUMOS PASTELERÍA","unit":"ml","cost":20.1},{"id":54,"description":"Esencia de crema de whiskey","category":"INSUMOS PASTELERÍA","unit":"ml","cost":33.0},{"id":55,"description":"Esencia de hinojo","category":"INSUMOS PASTELERÍA","unit":"ml","cost":35.5},{"id":56,"description":"Esencia de ponqué","category":"INSUMOS PASTELERÍA","unit":"ml","cost":33.0},{"id":57,"description":"Esencia de vainilla","category":"INSUMOS PASTELERÍA","unit":"ml","cost":20.1},{"id":58,"description":"Esencia naranja","category":"INSUMOS PASTELERÍA","unit":"ml","cost":22.6},{"id":59,"description":"Esencia ron con pasas","category":"INSUMOS PASTELERÍA","unit":"ml","cost":33.0},{"id":60,"description":"Ferrero roché","category":"INSUMOS PASTELERÍA","unit":"Und","cost":1200.0},{"id":61,"description":"Figuras tarritos","category":"INSUMOS PASTELERÍA","unit":"g","cost":190.0},{"id":62,"description":"fresa grande","category":"INSUMOS PASTELERÍA","unit":"Und","cost":476.19},{"id":63,"description":"fresa mediana","category":"INSUMOS PASTELERÍA","unit":"Und","cost":204.55},{"id":64,"description":"fresa para mermelada","category":"INSUMOS PASTELERÍA","unit":"g","cost":10.99},{"id":65,"description":"Fruta cristalizada","category":"INSUMOS PASTELERÍA","unit":"g","cost":13.2},{"id":66,"description":"Frutos amarillos para mermelada","category":"INSUMOS PASTELERÍA","unit":"g","cost":9.33},{"id":67,"description":"Frutos rojos para mermelada","category":"INSUMOS PASTELERÍA","unit":"g","cost":16.45},{"id":68,"description":"Fécula","category":"INSUMOS PASTELERÍA","unit":"g","cost":4.64},{"id":69,"description":"Galleta minichips","category":"INSUMOS PASTELERÍA","unit":"Und","cost":93.75},{"id":70,"description":"Galleta recreo","category":"INSUMOS PASTELERÍA","unit":"g","cost":491.6667},{"id":71,"description":"Galleta triturada","category":"INSUMOS PASTELERÍA","unit":"g","cost":30.93},{"id":72,"description":"Gelatina sin sabor","category":"INSUMOS PASTELERÍA","unit":"g","cost":72.0},{"id":73,"description":"Glaseado","category":"INSUMOS PASTELERÍA","unit":"g","cost":7.92},{"id":74,"description":"Glicerina","category":"INSUMOS PASTELERÍA","unit":"g","cost":13.94},{"id":75,"description":"Glucosa","category":"INSUMOS PASTELERÍA","unit":"g","cost":16.6},{"id":76,"description":"Gomas trululu x 40g","category":"INSUMOS PASTELERÍA","unit":"g","cost":32.5},{"id":77,"description":"Gragea","category":"INSUMOS PASTELERÍA","unit":"g","cost":10.8},{"id":78,"description":"Grageas figuras","category":"INSUMOS PASTELERÍA","unit":"g","cost":13.6},{"id":79,"description":"Granulado de colores m&m","category":"INSUMOS PASTELERÍA","unit":"g","cost":77.18},{"id":80,"description":"Granulado lluvia chocolate","category":"INSUMOS PASTELERÍA","unit":"g","cost":46.264},{"id":81,"description":"Granulado lluvia colores","category":"INSUMOS PASTELERÍA","unit":"g","cost":52.308},{"id":82,"description":"Harina de almendras","category":"INSUMOS PASTELERÍA","unit":"g","cost":68.0},{"id":83,"description":"Harina haz de oros","category":"INSUMOS PASTELERÍA","unit":"g","cost":2.72},{"id":84,"description":"Hidrogenada Palmares","category":"INSUMOS PASTELERÍA","unit":"g","cost":7.73},{"id":85,"description":"Huevos","category":"INSUMOS PASTELERÍA","unit":"Und","cost":433.0},{"id":86,"description":"Leche en polvo","category":"INSUMOS PASTELERÍA","unit":"g","cost":23.33},{"id":87,"description":"Leche líquida","category":"INSUMOS PASTELERÍA","unit":"ml","cost":3.75},{"id":88,"description":"Licor de café","category":"INSUMOS PASTELERÍA","unit":"g","cost":30.0},{"id":89,"description":"Limón","category":"INSUMOS PASTELERÍA","unit":"Und","cost":200.0},{"id":90,"description":"Mamut","category":"INSUMOS PASTELERÍA","unit":"Und","cost":180.0},{"id":91,"description":"Mantequilla","category":"INSUMOS PASTELERÍA","unit":"g","cost":48.6},{"id":92,"description":"Maní","category":"INSUMOS PASTELERÍA","unit":"g","cost":17.0},{"id":93,"description":"maracuya fruta","category":"INSUMOS PASTELERÍA","unit":"g","cost":20.75},{"id":94,"description":"Margarina 5A","category":"INSUMOS PASTELERÍA","unit":"g","cost":9.27},{"id":95,"description":"Merengue","category":"INSUMOS PASTELERÍA","unit":"g","cost":30.0},{"id":96,"description":"Mermelada de durazno","category":"INSUMOS PASTELERÍA","unit":"g","cost":9.26},{"id":97,"description":"Milo x 2500g","category":"INSUMOS PASTELERÍA","unit":"g","cost":35.2},{"id":98,"description":"Mixo x 2500g","category":"INSUMOS PASTELERÍA","unit":"g","cost":23.2},{"id":99,"description":"Mora","category":"INSUMOS PASTELERÍA","unit":"g","cost":9.29},{"id":100,"description":"Nuez","category":"INSUMOS PASTELERÍA","unit":"g","cost":76.0},{"id":101,"description":"piña","category":"INSUMOS PASTELERÍA","unit":"g","cost":5.98},{"id":102,"description":"Polvo dorado","category":"INSUMOS PASTELERÍA","unit":"g","cost":320.0},{"id":103,"description":"Polvo para hornear","category":"INSUMOS PASTELERÍA","unit":"g","cost":20.2},{"id":104,"description":"Premezcla bizcochuelo","category":"INSUMOS PASTELERÍA","unit":"g","cost":16.0},{"id":105,"description":"Premezcla zanahoria","category":"INSUMOS PASTELERÍA","unit":"g","cost":3.04},{"id":106,"description":"Queso crema","category":"INSUMOS PASTELERÍA","unit":"g","cost":21.28},{"id":107,"description":"Queso cuajada","category":"INSUMOS PASTELERÍA","unit":"g","cost":15.8},{"id":108,"description":"Relleno de maracuyá","category":"INSUMOS PASTELERÍA","unit":"g","cost":9.73},{"id":109,"description":"Relleno fresa","category":"INSUMOS PASTELERÍA","unit":"g","cost":8.0},{"id":110,"description":"Relleno frutos rojos","category":"INSUMOS PASTELERÍA","unit":"g","cost":8.0},{"id":111,"description":"Relleno maracuyá","category":"INSUMOS PASTELERÍA","unit":"g","cost":5.63},{"id":112,"description":"Relleno mora","category":"INSUMOS PASTELERÍA","unit":"g","cost":8.0},{"id":113,"description":"Sal","category":"INSUMOS PASTELERÍA","unit":"g","cost":3.0},{"id":114,"description":"Semillas de amapola","category":"INSUMOS PASTELERÍA","unit":"g","cost":78.0},{"id":115,"description":"Sorbato de potasio","category":"INSUMOS PASTELERÍA","unit":"g","cost":34.8},{"id":116,"description":"Vinagre","category":"INSUMOS PASTELERÍA","unit":"ml","cost":2.51},{"id":117,"description":"Vino","category":"INSUMOS PASTELERÍA","unit":"ml","cost":7.0},{"id":118,"description":"Vitina","category":"INSUMOS PASTELERÍA","unit":"g","cost":10.4664},{"id":119,"description":"Zanahoria","category":"INSUMOS PASTELERÍA","unit":"g","cost":6.0},{"id":120,"description":"Zumo de limón","category":"INSUMOS PASTELERÍA","unit":"ml","cost":5.0},{"id":121,"description":"Ácido sorbico","category":"INSUMOS PASTELERÍA","unit":"g","cost":31.3},{"id":122,"description":"Azúcar en sobres","category":"GRECA (CAFÉ)","unit":"g","cost":7.0},{"id":123,"description":"cafe en grano","category":"GRECA (CAFÉ)","unit":"g","cost":49.6},{"id":124,"description":"Blonda # 15.5","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":135.0},{"id":125,"description":"Blonda # 17","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":156.75},{"id":126,"description":"Blonda # 21","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":234.75},{"id":127,"description":"Blonda # 24.5","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":223.0},{"id":128,"description":"Blonda # 26","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":360.5},{"id":129,"description":"Blonda # 30","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":448.5},{"id":130,"description":"Bolsa 7x12","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":18.5},{"id":131,"description":"Bolsa aluminio","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":24.6},{"id":132,"description":"Bolsa p&P","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":147.0},{"id":133,"description":"Bolsa t15","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":64.0},{"id":134,"description":"Bolsa t25","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":90.0},{"id":135,"description":"Bolsa t30","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":30.0},{"id":136,"description":"Bolsa t40","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":120.0},{"id":137,"description":"Caja maletin 1/2 Distriuno","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":1450.0},{"id":138,"description":"Caja maletin 1/2 Isafrut","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":1250.0},{"id":139,"description":"Caja maletin 1/4","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":1700.0},{"id":140,"description":"Caja maletin dos libras","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":3850.0},{"id":141,"description":"Caja maletin libra","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":2300.0},{"id":142,"description":"Caja maletin libra y media","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":3200.0},{"id":143,"description":"Capacillos #2","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":260.0},{"id":144,"description":"Capacillos #5","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":330.0},{"id":145,"description":"Cartulina escarchada","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":3100.0},{"id":146,"description":"Cuchara Bon yurt","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":75.0},{"id":147,"description":"cuchara peq x100","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":26.0},{"id":148,"description":"Cuchara sopera","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":65.1},{"id":149,"description":"Domo #17","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":1542.0},{"id":150,"description":"Domo #22","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":2589.0},{"id":151,"description":"Domo #28 libra","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":2862.0},{"id":152,"description":"Domo 1 1/2","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":4950.0},{"id":153,"description":"Domo milhojas x 50 und","category":"DESECHABLES Y EMPAQUES","unit":"Paquete","cost":350.0},{"id":154,"description":"DomoMinipack cuadrado caja genovesa","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":629.5},{"id":155,"description":"Estras cm","category":"DESECHABLES Y EMPAQUES","unit":"cm","cost":55.0},{"id":156,"description":"Facturero","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":2500.0},{"id":157,"description":"Lámina icopor #20","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":8500.0},{"id":158,"description":"mezclador de madera","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":8.2},{"id":159,"description":"Molde aluminio  Cup cake x 50und","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":172.0},{"id":160,"description":"Molde aluminio mini lasagna","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":270.0},{"id":161,"description":"P.P 4x8","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":19.5},{"id":162,"description":"Palillo de dientes","category":"DESECHABLES Y EMPAQUES","unit":"Caja","cost":750.0},{"id":163,"description":"Palillo hamburguesa","category":"DESECHABLES Y EMPAQUES","unit":"Caja","cost":1440.0},{"id":164,"description":"Papel metalizado pliego","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":1300.0},{"id":165,"description":"Pincho 30cm x100 und","category":"DESECHABLES Y EMPAQUES","unit":"Paquete","cost":6100.0},{"id":166,"description":"Porta cupcake","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":428.75},{"id":167,"description":"Porta cupcake x 2","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":1650.0},{"id":168,"description":"Porta cupcake x 4","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":1650.0},{"id":169,"description":"Porta cupcake x 6","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":1650.0},{"id":170,"description":"Porta globo soporte torta","category":"DESECHABLES Y EMPAQUES","unit":"Paquete","cost":20000.0},{"id":171,"description":"Vinipel","category":"DESECHABLES Y EMPAQUES","unit":"Rollo","cost":48900.0},{"id":172,"description":"Bolsa basura","category":"ASEO","unit":"Und","cost":290.3333},{"id":173,"description":"desengrasante","category":"ASEO","unit":"ml","cost":3.47},{"id":174,"description":"deterpisos ambientador","category":"ASEO","unit":"ml","cost":2.74},{"id":175,"description":"Guantes","category":"ASEO","unit":"Caja","cost":7000.0},{"id":176,"description":"hipoclorito","category":"ASEO","unit":"ml","cost":3.52},{"id":177,"description":"jabon de manos","category":"ASEO","unit":"ml","cost":4.41},{"id":178,"description":"jabon neutro","category":"ASEO","unit":"ml","cost":4.45},{"id":179,"description":"Toalla manos","category":"ASEO","unit":"Und","cost":3500.0},{"id":180,"description":"Caja volcán","category":"DECORACIÓN","unit":"Und","cost":1312.5},{"id":181,"description":"Cinta estampada 50 cm","category":"DECORACIÓN","unit":"Und","cost":3900.0},{"id":182,"description":"Cinta impronta","category":"DECORACIÓN","unit":"cm","cost":8.0},{"id":183,"description":"Cinta metalizada 25 cm","category":"DECORACIÓN","unit":"cm","cost":2286.0},{"id":184,"description":"Cinta metalizada 50 cm","category":"DECORACIÓN","unit":"cm","cost":4572.0},{"id":185,"description":"Cinta texturizada escarchada 50 cm","category":"DECORACIÓN","unit":"cm","cost":4572.0},{"id":186,"description":"Coronas Grandes","category":"DECORACIÓN","unit":"Und","cost":4000.0},{"id":187,"description":"Coronas Medianas","category":"DECORACIÓN","unit":"Und","cost":3200.0},{"id":188,"description":"Coronas pequeñas","category":"DECORACIÓN","unit":"Und","cost":1800.0},{"id":189,"description":"Esfera color amarillo","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":190,"description":"Esfera color azul","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":191,"description":"Esfera color beige","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":192,"description":"Esfera color blanco y negro","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":193,"description":"Esfera color dorado","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":194,"description":"Esfera color gris","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":195,"description":"Esfera color lila","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":196,"description":"Esfera color lila claro","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":197,"description":"Esfera color marron","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":198,"description":"Esfera color plata","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":199,"description":"Esfera color rojo","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":200,"description":"Esfera color rosa","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":201,"description":"Esfera color variado","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":202,"description":"Esfera color verde","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":203,"description":"Feliz cum Volcan","category":"DECORACIÓN","unit":"Und","cost":2700.0},{"id":204,"description":"Foami liso pliego","category":"DECORACIÓN","unit":"Und","cost":3600.0},{"id":205,"description":"Perla dorada #2 precio 1","category":"DECORACIÓN","unit":"g","cost":40.0},{"id":206,"description":"Perla dorada #2 precio 2","category":"DECORACIÓN","unit":"g","cost":45.0},{"id":207,"description":"Perla dorada #4","category":"DECORACIÓN","unit":"g","cost":52.0},{"id":208,"description":"Perla dorada #8","category":"DECORACIÓN","unit":"g","cost":53.6},{"id":209,"description":"Plato desechable 23cm x 20","category":"DECORACIÓN","unit":"Und","cost":7600.0},{"id":210,"description":"Plato pando # 15.5","category":"DECORACIÓN","unit":"Und","cost":120.0},{"id":211,"description":"Resma papel carta","category":"DECORACIÓN","unit":"Und","cost":23.6},{"id":212,"description":"Servilleta","category":"DECORACIÓN","unit":"Und","cost":9.45},{"id":213,"description":"Silicona barra","category":"DECORACIÓN","unit":"g","cost":35.7143},{"id":214,"description":"Silicona líquida","category":"DECORACIÓN","unit":"g","cost":35.0},{"id":215,"description":"Tapa bandeja negra-domo","category":"DECORACIÓN","unit":"Und","cost":531.5},{"id":216,"description":"Topper comestible","category":"DECORACIÓN","unit":"Und","cost":1250.0},{"id":217,"description":"Topper digital cupcake","category":"DECORACIÓN","unit":"Und","cost":583.0},{"id":218,"description":"Topper digital tortas","category":"DECORACIÓN","unit":"Und","cost":10000.0},{"id":219,"description":"Topper madera","category":"DECORACIÓN","unit":"Und","cost":3000.0},{"id":220,"description":"Topper volcan meme","category":"DECORACIÓN","unit":"Und","cost":3300.0},{"id":221,"description":"Vaso desechable 7 oz","category":"DECORACIÓN","unit":"Und","cost":2107.0},{"id":222,"description":"Vela Candle","category":"DECORACIÓN","unit":"Paquete","cost":1800.0},{"id":223,"description":"Vela Festella","category":"DECORACIÓN","unit":"Paquete","cost":1800.0},{"id":224,"description":"Vela happy","category":"DECORACIÓN","unit":"Paquete","cost":1800.0},{"id":225,"description":"Vela negra","category":"DECORACIÓN","unit":"Und","cost":1575.0},{"id":226,"description":"Vela número","category":"DECORACIÓN","unit":"Und","cost":1750.0},{"id":227,"description":"Vela Party","category":"DECORACIÓN","unit":"Paquete","cost":1800.0},{"id":228,"description":"Vela pequeña  x8 und","category":"DECORACIÓN","unit":"Paquete","cost":1800.0},{"id":229,"description":"Vela pequeña variada x 24 und","category":"DECORACIÓN","unit":"Paquete","cost":1800.0},{"id":230,"description":"Vela plateada","category":"DECORACIÓN","unit":"Und","cost":1920.0},{"id":231,"description":"Vela viejito","category":"DECORACIÓN","unit":"Und","cost":4000.0},{"id":232,"description":"Vela volcán","category":"DECORACIÓN","unit":"Und","cost":1250.0},{"id":233,"description":"agua botellax600","category":"BEBIDAS NEVERA","unit":"Und","cost":1333.33},{"id":234,"description":"bretaña 1.5","category":"BEBIDAS NEVERA","unit":"Und","cost":3750.0},{"id":235,"description":"cerveza club colombia","category":"BEBIDAS NEVERA","unit":"Und","cost":3416.67},{"id":236,"description":"coca-cola 1.5","category":"BEBIDAS NEVERA","unit":"Und","cost":5416.67},{"id":237,"description":"coca-cola personal x400","category":"BEBIDAS NEVERA","unit":"Und","cost":2500.0},{"id":238,"description":"gaseosa 2.5 postobon","category":"BEBIDAS NEVERA","unit":"Und","cost":4587.5},{"id":239,"description":"Hit x 500 ml","category":"BEBIDAS NEVERA","unit":"Und","cost":2333.0}];
+const INIT_QTY    = {"_1":30794.0,"_5":78.0,"_7":21672.0,"_9":50000.0,"_11":22406.0,"_13":450.0,"_14":9.0,"_15":1930.0,"_16":736.0,"_20":456.0,"_18":0.5,"_21":3600.0,"_22":1342.0,"_23":1980.0,"_24":11000.0,"_25":592.0,"_28":16400.0,"_29":500.0,"_30":400.0,"_32":3694.0,"_34":9078.0,"_35":354.0,"_36":4041.0,"_38":1676.0,"_40":3044.0,"_42":15912.0,"_45":577.0,"_76":80.0,"_60":4.0,"_97":2092.0,"_47":4452.0,"_49":3440.0,"_52":2210.0,"_53":4262.0,"_55":604.0,"_56":11800.0,"_57":280.0,"_58":2652.0,"_59":3950.0,"_68":10592.0,"_70":15.0,"_44":10.0,"_71":2704.0,"_72":1366.0,"_74":4964.0,"_75":4826.0,"_77":5379.0,"_78":1506.0,"_80":1010.0,"_81":4422.0,"_79":458.0,"_48":1060.0,"_61":200.0,"_83":45000.0,"_84":20340.0,"_116":2162.0,"_65":2486.0,"_102":492.0,"_103":6904.0,"_106":2778.0,"_108":8000.0,"_109":12300.0,"_112":4100.0,"_90":20.0,"_92":5800.0,"_94":35474.0,"_86":9240.0,"_87":35800.0,"_89":288.0,"_117":19804.0,"_118":2594.0,"_119":1170.0,"_121":1000.0,"_85":189.0,"_115":614.0,"_37":1014.0,"_98":2192.0,"_114":158.0,"_43":1.5,"_100":1376.0,"_17":880.0,"_88":3210.0,"_123":500.0,"_124":288.0,"_125":143.0,"_126":6.0,"_128":179.0,"_129":232.0,"_130":1600.0,"_131":310.0,"_132":1200.0,"_133":300.0,"_134":300.0,"_135":600.0,"_136":200.0,"_143":12.0,"_144":40.0,"_147":900.0,"_148":40.0,"_149":50.0,"_150":172.0,"_151":19.0,"_152":7.0,"_166":168.0,"_167":144.0,"_168":128.0,"_169":8.0,"_153":7.0,"_154":200.0,"_171":1.0,"_137":82.0,"_139":79.0,"_140":12.0,"_141":49.0,"_142":8.0,"_157":3.0,"_160":152.0,"_159":250.0,"_163":9.0,"_162":10.0,"_165":3.5,"_164":59.0,"_170":3.0,"_179":1.0,"_175":1.0,"_172":50.0,"_180":219.0,"_225":3.0,"_226":48.0,"_230":11.0,"_231":17.0,"_229":6.0,"_228":8.0,"_223":12.0,"_224":2.0,"_227":5.0,"_222":1.0,"_181":20.0,"_183":15.0,"_184":17.5,"_185":3.0,"_205":7426.0,"_206":624.0,"_207":3484.0,"_208":4260.0,"_209":3.0,"_212":7.0,"_214":100.0,"_213":700.0,"_215":200.0,"_219":131.0,"_220":45.0,"_221":5.0,"_193":1111.0,"_199":1016.0,"_198":458.0,"_194":540.0,"_195":442.0,"_191":864.0,"_197":496.0,"_189":300.0,"_196":292.0,"_192":546.0,"_200":1192.0,"_202":1207.0,"_190":2182.0,"_201":8920.0,"_186":5.0,"_187":3.0,"_188":2.0,"_233":18.0,"_234":8.0,"_235":8.0,"_236":1.0,"_237":17.0,"_238":4.0,"_239":17.0};
+const CAT_ORDER   = ["INSUMOS PASTELERÍA", "GRECA (CAFÉ)", "DESECHABLES Y EMPAQUES", "ASEO", "DECORACIÓN", "BEBIDAS NEVERA"];
 
 let db=null, unsubscribe=null;
 const st={cat:'TODOS',products:null,quantities:{},history:[]};
 const $=id=>document.getElementById(id);
 
-function fmt(n){return n||n===0?'$'+Math.round(n).toLocaleString('es-CO'):'';}
-function fmtC(n){const v=Number(n);return '$'+(v%1===0?v.toLocaleString('es-CO'):v.toFixed(4).replace(/0+$/,'').replace(/\.$/,''));}
+function fmt(n){return(n||n===0)?'$'+Math.round(n).toLocaleString('es-CO'):'';}
+function fmtC(n){const v=Number(n);return'$'+(v%1===0?v.toLocaleString('es-CO'):v.toFixed(4).replace(/0+$/,'').replace(/\.$/,''));}
 function toast(msg,c){const t=$('toast');t.textContent=msg;t.style.background=c||'var(--success)';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
-function getQ(id){const v=st.quantities['_'+id];return(v!=null&&v!=='')?v:'';}
+function getQ(id){const v=st.quantities['_'+id];return(v!=null&&v!=null)?v:'';}
 function hasQ(id){return getQ(id)!=='';}
 function grandTotal(){let t=0;st.products.forEach(p=>{const q=st.quantities['_'+p.id];if(q!=null&&q!=='')t+=q*p.cost;});return Math.round(t);}
 function setSdot(s){const d=$('sdot');d.className='sdot'+(s==='syncing'?' syncing':s==='err'?' err':'');}
 function setSyncLbl(m){$('sync-label').textContent=m;}
 
-window.parseQty=function(v){return parseFloat(String(v||'').replace(',','.'));};
+function getCatsSorted(){
+  const cats=new Set(st.products.map(p=>p.category));
+  const ordered=CAT_ORDER.filter(c=>cats.has(c));
+  cats.forEach(c=>{if(!ordered.includes(c))ordered.push(c);});
+  return ordered;
+}
+
+function rebuildCatSelect(){
+  const sel=$('new-cat');
+  const current=sel.value;
+  sel.innerHTML=getCatsSorted().map(c=>`<option value="${c}">${c}</option>`).join('');
+  if(current)sel.value=current;
+}
+
+window.addCategoryPrompt=function(){
+  const name=prompt('Nombre de la nueva categoría:','');
+  if(!name||!name.trim())return;
+  const cat=name.trim().toUpperCase();
+  if(!CAT_ORDER.includes(cat))CAT_ORDER.push(cat);
+  rebuildCatSelect();
+  $('new-cat').value=cat;
+  toast('✅ Categoría "'+cat+'" creada');
+};
 
 // LOGIN
 window.doLogin=async function(){
@@ -327,13 +333,21 @@ window.doLogin=async function(){
     db=getFirestore(app);
     const ref=doc(db,'inventario','datos');
     const snap=await getDoc(ref);
-    if(snap.exists()){const d=snap.data();st.quantities=d.quantities||{};st.history=d.history||[];if(d.products)st.products=d.products;}
-    if(!st.products)st.products=PRODUCTS_DB.map(p=>({...p}));
+    if(snap.exists()&&snap.data().products){
+      const d=snap.data();
+      st.products=d.products;st.quantities=d.quantities||{};st.history=d.history||[];
+    } else {
+      // First time: load from embedded DB + quantities from Excel
+      st.products=PRODUCTS_DB.map(p=>({...p}));
+      st.quantities={...INIT_QTY};
+      // Push initial data to Firebase
+      await setDoc(ref,{products:st.products,quantities:st.quantities,history:st.history,updatedAt:new Date().toISOString()});
+    }
     try{localStorage.setItem('ds_fb_key',apiKey);localStorage.setItem('ds_fb_pid',projectId);}catch(e){}
     startListener(ref);
     $('login-screen').style.display='none';$('main-app').style.display='block';
     setSdot('ok');setSyncLbl('☁️ Conectado a Firebase');
-    renderCats();renderProds();
+    rebuildCatSelect();renderCats();renderProds();
   }catch(err){setStatus('Error: '+err.message,true);$('btn-login').disabled=false;}
 };
 function setStatus(msg,err){const el=$('login-status');el.textContent=msg;el.className='login-status'+(err?' err':'');if(!err)$('btn-login').disabled=false;}
@@ -343,12 +357,12 @@ function startListener(ref){
   unsubscribe=onSnapshot(ref,snap=>{
     if(!snap.exists())return;
     const d=snap.data();
-    if(JSON.stringify(d.quantities)!==JSON.stringify(st.quantities)){
-      st.quantities=d.quantities||{};st.history=d.history||[];
+    if(JSON.stringify(d.quantities)!==JSON.stringify(st.quantities)||JSON.stringify(d.products)!==JSON.stringify(st.products)){
       if(d.products)st.products=d.products;
-      renderCats();renderProds();
+      st.quantities=d.quantities||{};st.history=d.history||[];
+      rebuildCatSelect();renderCats();renderProds();
       if($('page-history').classList.contains('active'))renderHist();
-      setSyncLbl('☁️ Actualizado desde otro dispositivo · '+new Date().toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'}));
+      setSyncLbl('☁️ Actualizado · '+new Date().toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'}));
     }
   });
 }
@@ -374,8 +388,9 @@ async function pushFB(){
   }catch(err){setSdot('err');setSyncLbl('⚠️ Error: '+err.message);}
 }
 window.forcSync=async function(){
+  if(!db)return;
   const snap=await getDoc(doc(db,'inventario','datos'));
-  if(snap.exists()){const d=snap.data();st.quantities=d.quantities||{};st.history=d.history||[];if(d.products)st.products=d.products;renderCats();renderProds();setSdot('ok');setSyncLbl('☁️ Actualizado');toast('✅ Datos actualizados');}
+  if(snap.exists()){const d=snap.data();if(d.products)st.products=d.products;st.quantities=d.quantities||{};st.history=d.history||[];rebuildCatSelect();renderCats();renderProds();setSdot('ok');setSyncLbl('☁️ Actualizado');toast('✅ Datos actualizados');}
 };
 
 // NAV
@@ -384,43 +399,49 @@ window.showPage=function(page){
   document.querySelectorAll('.ni-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
   $('nav-'+page).classList.add('active');
-  if(page==='history')renderHist();if(page==='prices')renderPrices();if(page==='settings')renderSessInfo();
+  if(page==='history')renderHist();
+  if(page==='prices')renderPrices();
+  if(page==='settings'){renderSessInfo();rebuildCatSelect();}
 };
 
-// INVENTORY
-function getCats(){const s=new Set();st.products.forEach(p=>s.add(p.category));return['TODOS',...Array.from(s).sort()];}
+// INVENTORY - FIX: usar addEventListener en lugar de oninput attr
 function renderCats(){
-  $('cat-scroll').innerHTML=getCats().map(c=>{
+  $('cat-scroll').innerHTML=['TODOS',...getCatsSorted()].map(c=>{
     const n=st.products.filter(p=>(c==='TODOS'||p.category===c)&&hasQ(p.id)).length;
-    return `<div class="cchip ${st.cat===c?'active':''}" onclick="setC('${c}')">${c}${n?`<span class="badge">${n}</span>`:''}</div>`;
+    return`<div class="cchip ${st.cat===c?'active':''}" onclick="setC('${c.replace(/'/g,"\'")}')">${c}${n?`<span class="badge">${n}</span>`:''}</div>`;
   }).join('');
 }
 window.setC=function(c){st.cat=c;renderCats();renderProds();};
+
 function renderProds(){
-  const search=($('search-input').value||'').toLowerCase();
+  const search=($('search-input').value||'').toLowerCase().trim();
   const list=$('prod-list');
   let f=st.products.filter(p=>{
     if(st.cat!=='TODOS'&&p.category!==st.cat)return false;
     if(search&&!p.description.toLowerCase().includes(search))return false;
     return true;
   });
-  f.sort((a,b)=>{const aq=hasQ(a.id)?0:1,bq=hasQ(b.id)?0:1;return aq!==bq?aq-bq:a.description.localeCompare(b.description,'es');});
+  f.sort((a,b)=>{
+    const aq=hasQ(a.id)?0:1,bq=hasQ(b.id)?0:1;
+    if(aq!==bq)return aq-bq;
+    return a.description.localeCompare(b.description,'es');
+  });
   if(!f.length){list.innerHTML='<div class="empty"><div class="empty-icon">🔍</div><p>Sin resultados</p></div>';updateTopbar();return;}
   list.innerHTML=f.map(p=>{
     const qty=getQ(p.id),cost=p.cost,total=qty!==''?qty*cost:'';
-    return `<div class="pcard ${qty!==''?'hq':''}" id="card-${p.id}">
+    return`<div class="pcard ${qty!==''?'hq':''}" id="card-${p.id}">
       <div class="ptop">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px">
           <div style="flex:1;min-width:0"><div class="pname">${p.description}</div><div class="pcat">${p.category}</div></div>
           <div style="display:flex;gap:4px;flex-shrink:0">
-            <button onclick="openAddQty(${p.id})" title="Sumar" style="background:rgba(192,96,128,.15);border:1px solid var(--gold);color:var(--gold);border-radius:6px;padding:3px 7px;font-size:14px;cursor:pointer;font-weight:700">+</button>
-            <button onclick="openEdit(${p.id})" title="Editar" style="background:rgba(139,77,160,.15);border:1px solid var(--teal);color:var(--teal);border-radius:6px;padding:3px 7px;font-size:12px;cursor:pointer">✏️</button>
-            <button onclick="delProd(${p.id})" title="Eliminar" style="background:rgba(231,76,60,.1);border:1px solid var(--danger);color:var(--danger);border-radius:6px;padding:3px 7px;font-size:12px;cursor:pointer">🗑️</button>
+            <button onclick="openAddQty(${p.id})" style="background:rgba(192,96,128,.15);border:1px solid var(--gold);color:var(--gold);border-radius:6px;padding:3px 7px;font-size:14px;cursor:pointer;font-weight:700">+</button>
+            <button onclick="openEdit(${p.id})" style="background:rgba(139,77,160,.15);border:1px solid var(--teal);color:var(--teal);border-radius:6px;padding:3px 7px;font-size:12px;cursor:pointer">✏️</button>
+            <button onclick="delProd(${p.id})" style="background:rgba(231,76,60,.1);border:1px solid var(--danger);color:var(--danger);border-radius:6px;padding:3px 7px;font-size:12px;cursor:pointer">🗑️</button>
           </div>
         </div>
       </div>
       <div class="pnums">
-        <div class="pnc"><div class="pnl">Cantidad (${p.unit})</div><div class="pnv qv"><input type="text" inputmode="decimal" class="qin" id="qty-${p.id}" value="${qty}" placeholder="—" onchange="setQty(${p.id},parseQty(this.value))" oninput="this.value=this.value.replace(',','.')" onfocus="this.select()"></div></div>
+        <div class="pnc"><div class="pnl">Cantidad (${p.unit})</div><div class="pnv qv"><input type="text" inputmode="decimal" class="qin" id="qty-${p.id}" value="${qty}" placeholder="—" onchange="setQty(${p.id},this.value)" oninput="this.value=this.value.replace(',','.')" onfocus="this.select()"></div></div>
         <div class="pnc"><div class="pnl">Costo/${p.unit}</div><div class="pnv cv" id="cost-${p.id}">${fmtC(cost)}</div></div>
         <div class="pnc"><div class="pnl">Total $</div><div class="pnv tv" id="tot-${p.id}">${total!==''?fmt(total):'—'}</div></div>
       </div>
@@ -428,22 +449,29 @@ function renderProds(){
   }).join('');
   updateTopbar();
 }
+
+// FIX BUSCADOR: event listener directo
+document.getElementById('search-input').addEventListener('input',renderProds);
+document.getElementById('pr-search').addEventListener('input',renderPrices);
+
 window.setQty=function(id,val){
+  const v=parseFloat(String(val).replace(',','.'));
   const k='_'+id;
-  if(isNaN(val)||val===null)delete st.quantities[k];else st.quantities[k]=val;
+  if(isNaN(v))delete st.quantities[k];else st.quantities[k]=v;
   const p=st.products.find(x=>x.id===id);
   const card=$('card-'+id),tot=$('tot-'+id);
   if(p&&card&&tot){const q=st.quantities[k],hq=q!=null;card.classList.toggle('hq',hq);tot.textContent=hq?fmt(q*p.cost):'—';}
   updateTopbar();renderCats();scheduleSave();
 };
 function updateTopbar(){$('topbar-total').textContent=fmt(grandTotal());}
+
 window.openAddQty=function(id){
   const p=st.products.find(x=>x.id===id);if(!p)return;
   const cur=getQ(id);
-  const raw=prompt(cur!==''?`Ya hay ${cur} ${p.unit}. ¿Cuánto más agregas?`:`¿Cuánto agregas? (${p.unit})`,'');
+  const raw=prompt(cur!==''?`Ya hay ${cur} ${p.unit}. ¿Cuánto más agregas?`:`¿Cuánto agregas? (${p.unit})`);
   if(raw===null||raw.trim()==='')return;
   const add=parseFloat(raw.replace(',','.'));
-  if(isNaN(add)||add<=0){toast('Ingresa un número válido','var(--danger)');return;}
+  if(isNaN(add)||add<=0){toast('Número inválido','var(--danger)');return;}
   const prev=cur!==''?parseFloat(cur):0;
   const total=Math.round((prev+add)*10000)/10000;
   window.setQty(id,total);const inp=$('qty-'+id);if(inp)inp.value=total;
@@ -452,15 +480,14 @@ window.openAddQty=function(id){
 window.openEdit=function(id){
   const p=st.products.find(x=>x.id===id);if(!p)return;
   const n=prompt('Nombre del insumo:',p.description);
-  if(n===null)return;const t=n.trim();if(!t){toast('Nombre vacío','var(--danger)');return;}
-  p.description=t;scheduleSave();renderProds();renderPrices();toast('✅ Insumo actualizado');
+  if(n===null)return;const t=n.trim();if(!t)return;
+  p.description=t;scheduleSave();renderProds();renderPrices();toast('✅ Actualizado');
 };
 window.delProd=function(id){
   const p=st.products.find(x=>x.id===id);if(!p)return;
   if(!confirm('¿Eliminar "'+p.description+'"?'))return;
-  st.products=st.products.filter(x=>x.id!==id);
-  delete st.quantities['_'+id];
-  scheduleSave();renderCats();renderProds();toast('🗑️ Insumo eliminado');
+  st.products=st.products.filter(x=>x.id!==id);delete st.quantities['_'+id];
+  scheduleSave();renderCats();renderProds();toast('🗑️ Eliminado');
 };
 
 // VOICE
@@ -471,18 +498,18 @@ window.toggleVoice=function(){
   if(isListening){recognition&&recognition.stop();return;}
   recognition=new SR();recognition.lang='es-CO';recognition.continuous=false;recognition.interimResults=false;
   recognition.onstart=()=>{isListening=true;$('mic-btn').classList.add('listening');toast('🎙️ Escuchando...','var(--teal)');};
-  recognition.onresult=e=>processVoice(e.results[0][0].transcript);
+  recognition.onresult=e=>{
+    const text=e.results[0][0].transcript;
+    const num=text.match(/\d+([.,]\d+)?/);const focused=document.activeElement;
+    if(num){const val=parseFloat(num[0].replace(',','.'));
+      if(focused&&focused.classList.contains('qin')){focused.value=val;const id=parseInt(focused.id.replace('qty-',''));window.setQty(id,val);toast('✅ '+val);}
+      else{$('search-input').value=text.replace(num[0],'').trim();renderProds();}
+    }else{$('search-input').value=text;renderProds();}
+  };
   recognition.onend=()=>{isListening=false;$('mic-btn').classList.remove('listening');};
   recognition.onerror=()=>{isListening=false;$('mic-btn').classList.remove('listening');};
   recognition.start();
 };
-function processVoice(text){
-  const num=text.match(/\d+([.,]\d+)?/);const focused=document.activeElement;
-  if(num){const val=parseFloat(num[0].replace(',','.'));
-    if(focused&&focused.classList.contains('qin')){focused.value=val;const id=parseInt(focused.id.replace('qty-',''));window.setQty(id,val);toast('✅ '+val+' registrado');}
-    else{$('search-input').value=text.replace(num[0],'').trim();renderProds();toast('Toca el campo y dicta el número','var(--gold)');}
-  }else{$('search-input').value=text;renderProds();toast('Buscando: "'+text+'"','var(--teal)');}
-}
 
 // PRICES
 function renderPrices(){
@@ -491,11 +518,12 @@ function renderPrices(){
   const f=st.products.filter(p=>!search||p.description.toLowerCase().includes(search));
   if(!f.length){list.innerHTML='<div class="empty"><div class="empty-icon">🔍</div><p>Sin resultados</p></div>';return;}
   const byCat={};f.forEach(p=>{if(!byCat[p.category])byCat[p.category]=[];byCat[p.category].push(p);});
-  list.innerHTML=Object.entries(byCat).sort().map(([cat,ps])=>
+  const catsSorted=getCatsSorted().filter(c=>byCat[c]);
+  list.innerHTML=catsSorted.map(cat=>
     `<div class="stitle">${cat}</div>`+
-    ps.map(p=>`<div class="prcard">
+    byCat[cat].map(p=>`<div class="prcard">
       <div class="pri"><div class="prname">${p.description}</div><div class="prunit">Por ${p.unit} · <strong style="color:var(--gold)">${fmtC(p.cost)}</strong></div></div>
-      <input type="number" class="prinput" value="${p.cost}" step="0.01" min="0" inputmode="decimal" onchange="updPrice(${p.id},this.value)" onfocus="this.select()">
+      <input type="number" class="prinput" value="${p.cost}" step="0.0001" min="0" inputmode="decimal" onchange="updPrice(${p.id},this.value)" onfocus="this.select()">
     </div>`).join('')
   ).join('');
 }
@@ -511,7 +539,7 @@ window.openCalc=function(){calcProd=null;calcMult=1000;['calc-s','calc-p','calc-
 window.closeCalc=function(){$('modal-calc').classList.remove('open');};
 window.searchCalc=function(){
   const q=$('calc-s').value.toLowerCase(),res=$('calc-res');
-  if(!q||q.length<2){res.style.display='none';return;}
+  if(!q||q.length<1){res.style.display='none';return;}
   const m=st.products.filter(p=>p.description.toLowerCase().includes(q)).slice(0,10);
   if(!m.length){res.style.display='none';return;}
   res.innerHTML=m.map(p=>`<div onclick="selCalcP(${p.id})" style="padding:9px 12px;cursor:pointer;border-bottom:1px solid var(--border);font-size:13px"><strong>${p.description}</strong> <span style="font-size:10px;color:var(--muted)">${p.unit}</span></div>`).join('');
@@ -535,7 +563,7 @@ window.applyCalc=function(){
   toast('✅ '+p.description+': $'+cpu.toFixed(2)+'/'+p.unit);
 };
 
-// FOTO FACTURA
+// FOTO
 let photoData=[];
 window.openPhoto=function(){photoData=[];$('ph-prev').style.display='none';$('ph-load').style.display='none';$('ph-out').style.display='none';$('ph-file').value='';$('modal-photo').classList.add('open');};
 window.closePhoto=function(){$('modal-photo').classList.remove('open');};
@@ -549,36 +577,32 @@ window.handlePhoto=async function(input){
     const response=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,messages:[{role:'user',content:[
         {type:'image',source:{type:'base64',media_type:file.type||'image/jpeg',data:b64}},
-        {type:'text',text:'Analiza esta factura de pastelería en Colombia. Extrae TODOS los productos con precios. Calcula costo por unidad mínima: si es por kg ÷1000 para gramos, si es caja de N unidades ÷N, si ya es por unidad déjalo igual. Responde SOLO JSON sin texto adicional: [{"nombre_factura":"...","precio_total":30000,"cantidad":12,"unidad_empaque":"unidades","costo_por_unidad":2500,"unidad_minima":"Und","match_sugerido":"nombre aproximado en inventario"}]. Catálogo: '+catalog}
+        {type:'text',text:'Analiza esta factura de pastelería en Colombia. Extrae TODOS los productos con precios. Calcula costo por unidad mínima: si es por kg ÷1000 para gramos, si es caja de N unidades ÷N, si ya es por unidad déjalo igual. Responde SOLO JSON: [{"nombre_factura":"...","precio_total":30000,"cantidad":12,"unidad_empaque":"unidades","costo_por_unidad":2500,"unidad_minima":"Und","match_sugerido":"nombre en inventario"}]. Catálogo: '+catalog}
       ]}]})});
     const data=await response.json();$('ph-load').style.display='none';
     if(data.error)throw new Error(data.error.message);
     const text=(data.content||[]).map(c=>c.text||'').join('');
     const items=JSON.parse(text.replace(/```json|```/g,'').trim());
-    photoData=items;renderPhItems(items);
+    photoData=items;
+    $('ph-items').innerHTML=items.map((item,idx)=>{
+      const m=st.products.filter(p=>p.description.toLowerCase().includes((item.nombre_factura||''). toLowerCase().split(' ')[0])).slice(0,6);
+      const bestId=m.length?m[0].id:'';
+      return`<div class="phitem ${m.length?'matched':''}">
+        <div style="font-size:13px;font-weight:700">📦 ${item.nombre_factura}</div>
+        <div style="font-size:11px;color:var(--muted)">$${(item.precio_total||0).toLocaleString('es-CO')} · ${item.cantidad} ${item.unidad_empaque}</div>
+        <div style="font-size:13px;color:var(--gold);font-weight:700">→ $${(item.costo_por_unidad||0).toFixed(4).replace(/0+$/,'').replace(/\.$/,'')} por ${item.unidad_minima}</div>
+        <select class="phmsel" id="pm-${idx}">
+          <option value="">— No aplicar —</option>
+          ${st.products.map(p=>`<option value="${p.id}" ${p.id==bestId?'selected':''}>${p.description}</option>`).join('')}
+        </select>
+      </div>`;
+    }).join('');
+    $('ph-out').style.display='block';
   }catch(err){$('ph-load').style.display='none';toast('Error: '+err.message,'var(--danger)');}
 };
-function renderPhItems(items){
-  const el=$('ph-items');
-  if(!items.length){el.innerHTML='<div class="empty"><div class="empty-icon">🤷</div><p>No se encontraron productos</p></div>';$('ph-out').style.display='block';return;}
-  el.innerHTML=items.map((item,idx)=>{
-    const m=st.products.filter(p=>p.description.toLowerCase().includes((item.nombre_factura||'').toLowerCase().split(' ')[0])||(item.match_sugerido&&p.description.toLowerCase().includes((item.match_sugerido||'').toLowerCase().split(' ')[0]))).slice(0,6);
-    const bestId=m.length?m[0].id:'';
-    return `<div class="phitem ${m.length?'matched':''}">
-      <div style="font-size:13px;font-weight:700">📦 ${item.nombre_factura}</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:2px">$${(item.precio_total||0).toLocaleString('es-CO')} · ${item.cantidad} ${item.unidad_empaque}</div>
-      <div style="font-size:13px;color:var(--gold);font-weight:700;margin-top:3px">→ $${(item.costo_por_unidad||0).toFixed(4).replace(/0+$/,'').replace(/\.$/,'')} por ${item.unidad_minima}</div>
-      <select class="phmsel" id="pm-${idx}">
-        <option value="">— No aplicar —</option>
-        ${st.products.map(p=>`<option value="${p.id}" ${p.id==bestId?'selected':''}>${p.description}</option>`).join('')}
-      </select>
-    </div>`;
-  }).join('');
-  $('ph-out').style.display='block';
-}
 window.applyPhoto=function(){
   let n=0;photoData.forEach((item,idx)=>{const sel=$('pm-'+idx);if(!sel||!sel.value)return;const p=st.products.find(x=>x.id===parseInt(sel.value));if(!p||!item.costo_por_unidad)return;p.cost=item.costo_por_unidad;n++;});
-  if(!n){toast('Selecciona al menos un insumo','var(--danger)');return;}
+  if(!n){toast('Selecciona al menos uno','var(--danger)');return;}
   scheduleSave();renderPrices();window.closePhoto();toast('✅ '+n+' precio(s) actualizados');
 };
 
@@ -597,93 +621,101 @@ function renderHist(){
     <div class="sestot">${fmt(s.total||0)}</div>
   </div>`).join('');
 }
-window.loadSes=function(id){const s=st.history.find(x=>x.id===id);if(!s||!confirm('¿Cargar este inventario?'))return;st.quantities={...s.quantities};scheduleSave();window.showPage('inv');renderCats();renderProds();toast('✅ Inventario cargado');};
+window.loadSes=function(id){const s=st.history.find(x=>x.id===id);if(!s||!confirm('¿Cargar este inventario?'))return;st.quantities={...s.quantities};scheduleSave();window.showPage('inv');renderCats();renderProds();toast('✅ Cargado');};
 
 // CONFIG
 function renderSessInfo(){
   const n=Object.keys(st.quantities).filter(k=>k.startsWith('_')).length;
-  $('sess-info').innerHTML=`🎂 Dulce Sofía Pastelería<br>${n} insumos registrados · ${fmt(grandTotal())}`;
+  $('sess-info').innerHTML=`🎂 Dulce Sofía Pastelería<br>${n} insumos con cantidad · ${fmt(grandTotal())}`;
 }
 window.clearCurrent=function(){if(!confirm('¿Limpiar TODAS las cantidades?'))return;st.quantities={};scheduleSave();renderCats();renderProds();toast('Cantidades limpiadas');};
 window.addProduct=function(){
   const name=$('new-name').value.trim();if(!name){toast('Escribe el nombre','var(--danger)');return;}
   const newId=Math.max(0,...st.products.map(p=>p.id))+1;
-  st.products.push({id:newId,description:name,category:$('new-cat').value,unit:$('new-unit').value,cost:parseFloat($('new-cost').value)||0});
+  const cat=$('new-cat').value;
+  if(!CAT_ORDER.includes(cat))CAT_ORDER.push(cat);
+  st.products.push({id:newId,description:name,category:cat,unit:$('new-unit').value,cost:parseFloat($('new-cost').value)||0});
   $('new-name').value='';$('new-cost').value='';
-  scheduleSave();renderCats();renderProds();toast('✅ Insumo agregado: '+name);
+  scheduleSave();rebuildCatSelect();renderCats();renderProds();toast('✅ Insumo agregado: '+name);
 };
 
 // EXCEL
 window.exportExcel=function(){
   const now=new Date(),ds=now.toLocaleDateString('es-CO',{year:'numeric',month:'long',day:'numeric'}),ts=now.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
   const XL={navy:'1A0E2E',gold:'C06080',teal:'8B4DA0',white:'FFFFFF',light:'F5F0F8',gray:'D8C8E8',text:'1A0E2E'};
-  function sH(fill,color){return{font:{bold:true,color:{rgb:color||XL.white},sz:11,name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:fill||XL.navy}},alignment:{horizontal:'center',vertical:'center'},border:{bottom:{style:'medium',color:{rgb:XL.gold}}}};}
-  function sD(fill,bold,align){return{font:{bold:!!bold,color:{rgb:XL.text},sz:10,name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:fill||XL.white}},alignment:{horizontal:align||'left',vertical:'center'},border:{bottom:{style:'thin',color:{rgb:XL.gray}}}};}
-  function sM(fill,bold){return{font:{bold:!!bold,color:{rgb:bold?XL.navy:XL.text},sz:10,name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:fill||XL.white}},alignment:{horizontal:'right',vertical:'center'},border:{bottom:{style:'thin',color:{rgb:XL.gray}}}};}
-  function fN(n){return n!=null?Math.round(n*100)/100:null;}
+  const sH=(fill,color)=>({font:{bold:true,color:{rgb:color||XL.white},sz:11,name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:fill||XL.navy}},alignment:{horizontal:'center',vertical:'center'},border:{bottom:{style:'medium',color:{rgb:XL.gold}}}});
+  const sD=(fill,bold,align)=>({font:{bold:!!bold,color:{rgb:XL.text},sz:10,name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:fill||XL.white}},alignment:{horizontal:align||'left',vertical:'center'},border:{bottom:{style:'thin',color:{rgb:XL.gray}}}});
+  const sM=(fill,bold)=>({font:{bold:!!bold,color:{rgb:bold?XL.navy:XL.text},sz:10,name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:fill||XL.white}},alignment:{horizontal:'right',vertical:'center'},border:{bottom:{style:'thin',color:{rgb:XL.gray}}}});
+  const fN=n=>n!=null?Math.round(n*100)/100:null;
 
+  const catsSorted=getCatsSorted();
   const byCat={};
   st.products.forEach(p=>{if(!byCat[p.category])byCat[p.category]=[];byCat[p.category].push(p);});
 
-  const ws={},merges=[];let r=0;
-  ws['!rows']=[];
+  const ws={},merges=[];let r=0;ws['!rows']=[];
 
-  // Título
-  ws[XLSX.utils.encode_cell({r,c:0})]={v:'DULCE SOFÍA — PASTELERÍA',t:'s',s:{font:{bold:true,sz:18,color:{rgb:XL.white},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.navy}},alignment:{horizontal:'center',vertical:'center'}}};
+  const setCell=(row,col,v,t,z,s)=>{
+    const addr=XLSX.utils.encode_cell({r:row,c:col});
+    ws[addr]={v,t:t||'s'};if(z)ws[addr].z=z;if(s)ws[addr].s=s;
+  };
+
+  setCell(r,0,'DULCE SOFÍA — PASTELERÍA','s',null,{font:{bold:true,sz:18,color:{rgb:XL.white},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.navy}},alignment:{horizontal:'center',vertical:'center'}});
   merges.push({s:{r,c:0},e:{r,c:4}});ws['!rows'][r]={hpt:36};r++;
-
-  ws[XLSX.utils.encode_cell({r,c:0})]={v:'INVENTARIO DE INSUMOS  ·  '+ds+'  ·  Hora: '+ts,t:'s',s:{font:{sz:10,color:{rgb:'666666'},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.light}},alignment:{horizontal:'center'}}};
+  setCell(r,0,'INVENTARIO DE INSUMOS  ·  '+ds+'  ·  Hora: '+ts,'s',null,{font:{sz:10,color:{rgb:'666666'},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.light}},alignment:{horizontal:'center'}});
   merges.push({s:{r,c:0},e:{r,c:4}});ws['!rows'][r]={hpt:18};r+=2;
 
   // Resumen
-  ws[XLSX.utils.encode_cell({r,c:0})]={v:'RESUMEN POR CATEGORÍA',t:'s',s:{font:{bold:true,sz:12,color:{rgb:XL.white},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.teal}},alignment:{horizontal:'left'}}};
+  setCell(r,0,'RESUMEN POR CATEGORÍA','s',null,{font:{bold:true,sz:12,color:{rgb:XL.white},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.teal}},alignment:{horizontal:'left'}});
   merges.push({s:{r,c:0},e:{r,c:4}});ws['!rows'][r]={hpt:22};r++;
-  ['Categoría','Insumos registrados','Total ($)'].forEach((h,ci)=>{ws[XLSX.utils.encode_cell({r,c:ci})]={v:h,t:'s',s:sH()};});
+  ['Categoría','Insumos con cantidad','Total ($)'].forEach((h,ci)=>{setCell(r,ci,h,'s',null,sH());});
   ws['!rows'][r]={hpt:20};r++;
 
   let grand=0;
-  Object.entries(byCat).sort().forEach(([cat,ps],i)=>{
-    let t=0,c=0;ps.forEach(p=>{const q=st.quantities['_'+p.id];if(q!=null&&q!==''){t+=q*p.cost;c++;}});grand+=t;
+  catsSorted.filter(c=>byCat[c]).forEach((cat,i)=>{
+    const ps=byCat[cat];let t=0,cnt=0;
+    ps.forEach(p=>{const q=st.quantities['_'+p.id];if(q!=null&&q!==''){t+=q*p.cost;cnt++;}});
+    grand+=t;
     const fill=i%2===0?XL.white:XL.light;
-    ws[XLSX.utils.encode_cell({r,c:0})]={v:cat,t:'s',s:sD(fill)};
-    ws[XLSX.utils.encode_cell({r,c:1})]={v:c,t:'n',s:sD(fill,false,'center')};
-    ws[XLSX.utils.encode_cell({r,c:2})]={v:fN(t),t:'n',z:'"$"#,##0',s:sM(fill)};
+    setCell(r,0,cat,'s',null,sD(fill));
+    setCell(r,1,cnt,'n',null,sD(fill,false,'center'));
+    setCell(r,2,fN(t),'n','"$"#,##0',sM(fill));
     ws['!rows'][r]={hpt:18};r++;
   });
-  ws[XLSX.utils.encode_cell({r,c:0})]={v:'TOTAL GENERAL',t:'s',s:{font:{bold:true,sz:12,color:{rgb:XL.gold},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.navy}},alignment:{horizontal:'right'}}};
+  setCell(r,0,'TOTAL GENERAL','s',null,{font:{bold:true,sz:12,color:{rgb:XL.gold},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.navy}},alignment:{horizontal:'right'}});
   merges.push({s:{r,c:0},e:{r,c:1}});
-  ws[XLSX.utils.encode_cell({r,c:2})]={v:fN(grand),t:'n',z:'"$"#,##0',s:{font:{bold:true,sz:13,color:{rgb:XL.gold},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.navy}},alignment:{horizontal:'right'}}};
+  setCell(r,2,fN(grand),'n','"$"#,##0',{font:{bold:true,sz:13,color:{rgb:XL.gold},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.navy}},alignment:{horizontal:'right'}});
   ws['!rows'][r]={hpt:24};r+=2;
 
   // Detalle
-  ws[XLSX.utils.encode_cell({r,c:0})]={v:'DETALLE POR CATEGORÍA',t:'s',s:{font:{bold:true,sz:12,color:{rgb:XL.white},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.teal}},alignment:{horizontal:'left'}}};
+  setCell(r,0,'DETALLE POR CATEGORÍA','s',null,{font:{bold:true,sz:12,color:{rgb:XL.white},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.teal}},alignment:{horizontal:'left'}});
   merges.push({s:{r,c:0},e:{r,c:4}});ws['!rows'][r]={hpt:22};r++;
 
-  Object.entries(byCat).sort().forEach(([cat,ps])=>{
-    ws[XLSX.utils.encode_cell({r,c:0})]={v:cat.toUpperCase(),t:'s',s:{font:{bold:true,sz:11,color:{rgb:XL.navy},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.light}},alignment:{horizontal:'left'},border:{bottom:{style:'medium',color:{rgb:XL.teal}}}}};
+  catsSorted.filter(c=>byCat[c]).forEach(cat=>{
+    const ps=byCat[cat];
+    setCell(r,0,cat.toUpperCase(),'s',null,{font:{bold:true,sz:11,color:{rgb:XL.navy},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.light}},alignment:{horizontal:'left'},border:{bottom:{style:'medium',color:{rgb:XL.teal}}}});
     merges.push({s:{r,c:0},e:{r,c:4}});ws['!rows'][r]={hpt:20};r++;
-    ['Descripción','Unidad','Cantidad','Costo/Unidad','Total'].forEach((h,ci)=>{ws[XLSX.utils.encode_cell({r,c:ci})]={v:h,t:'s',s:sH(XL.navy,XL.white)};});
+    ['Descripción','Unidad','Cantidad','Costo/Unidad','Total'].forEach((h,ci)=>{setCell(r,ci,h,'s',null,sH(XL.navy,XL.white));});
     ws['!rows'][r]={hpt:18};r++;
     let catT=0,ri=0;
     ps.forEach(p=>{
       const q=st.quantities['_'+p.id],hasQ=q!=null&&q!=='',cost=p.cost,total=hasQ?fN(q*cost):null;
       if(total!=null)catT+=q*cost;
       const fill=hasQ?(ri%2===0?'F0E8F5':'F8F0FC'):(ri%2===0?XL.white:XL.light);
-      ws[XLSX.utils.encode_cell({r,c:0})]={v:p.description,t:'s',s:sD(fill)};
-      ws[XLSX.utils.encode_cell({r,c:1})]={v:p.unit,t:'s',s:sD(fill,false,'center')};
-      ws[XLSX.utils.encode_cell({r,c:2})]={v:hasQ?fN(q):null,t:hasQ?'n':'s',z:'#,##0.##',s:sD(fill,false,'center')};
-      ws[XLSX.utils.encode_cell({r,c:3})]={v:fN(cost),t:'n',z:'"$"#,##0.##',s:sM(fill)};
-      ws[XLSX.utils.encode_cell({r,c:4})]={v:total,t:total!=null?'n':'s',z:'"$"#,##0',s:sM(fill,hasQ)};
+      setCell(r,0,p.description,'s',null,sD(fill));
+      setCell(r,1,p.unit,'s',null,sD(fill,false,'center'));
+      setCell(r,2,hasQ?fN(q):null,hasQ?'n':'s','#,##0.##',sD(fill,false,'center'));
+      setCell(r,3,fN(cost),'n','"$"#,##0.####',sM(fill));
+      setCell(r,4,total,total!=null?'n':'s','"$"#,##0',sM(fill,hasQ));
       ws['!rows'][r]={hpt:17};r++;ri++;
     });
-    ws[XLSX.utils.encode_cell({r,c:3})]={v:'Subtotal '+cat+':',t:'s',s:sD(XL.light,true,'right')};
-    ws[XLSX.utils.encode_cell({r,c:4})]={v:fN(catT),t:'n',z:'"$"#,##0',s:{font:{bold:true,sz:10,color:{rgb:XL.navy},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.light}},alignment:{horizontal:'right'},border:{top:{style:'thin',color:{rgb:XL.gray}},bottom:{style:'medium',color:{rgb:XL.navy}}}}};
+    setCell(r,3,'Subtotal '+cat+':','s',null,sD(XL.light,true,'right'));
+    setCell(r,4,fN(catT),'n','"$"#,##0',{font:{bold:true,sz:10,color:{rgb:XL.navy},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.light}},alignment:{horizontal:'right'},border:{top:{style:'thin',color:{rgb:XL.gray}},bottom:{style:'medium',color:{rgb:XL.navy}}}});
     merges.push({s:{r,c:0},e:{r,c:2}});ws['!rows'][r]={hpt:18};r+=2;
   });
 
-  ws[XLSX.utils.encode_cell({r,c:0})]={v:'TOTAL GENERAL DEL INVENTARIO',t:'s',s:{font:{bold:true,sz:13,color:{rgb:XL.white},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.navy}},alignment:{horizontal:'right'}}};
+  setCell(r,0,'TOTAL GENERAL DEL INVENTARIO','s',null,{font:{bold:true,sz:13,color:{rgb:XL.white},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.navy}},alignment:{horizontal:'right'}});
   merges.push({s:{r,c:0},e:{r,c:3}});
-  ws[XLSX.utils.encode_cell({r,c:4})]={v:fN(grand),t:'n',z:'"$"#,##0',s:{font:{bold:true,sz:14,color:{rgb:XL.gold},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.navy}},alignment:{horizontal:'right'}}};
+  setCell(r,4,fN(grand),'n','"$"#,##0',{font:{bold:true,sz:14,color:{rgb:XL.gold},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.navy}},alignment:{horizontal:'right'}});
   ws['!rows'][r]={hpt:28};
 
   ws['!cols']=[{wch:48},{wch:10},{wch:12},{wch:16},{wch:16}];
