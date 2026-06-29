@@ -2,423 +2,427 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Dulce Sofía — Inventario</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-:root{--gold:#C06080;--teal:#8B4DA0;--dark:#1a0e2e;--surface:#160e2a;--card:#2a1040;--text:#e8d8f0;--muted:#9080a8;--danger:#e74c3c;--success:#2ecc71;--border:#3a2050}
+:root{--pk:#C06080;--pu:#8B4DA0;--dk:#1a0e2e;--sf:#160e2a;--cd:#2a1040;--tx:#e8d8f0;--mu:#9080a8;--re:#e74c3c;--gr:#2ecc71;--bd:#3a2050}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--dark);color:var(--text);min-height:100vh;overflow-x:hidden}
-#login-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;background:linear-gradient(160deg,#100820,#1a0e2e 60%,#2a1040)}
-.logo{font-size:60px;margin-bottom:6px}
-.app-title{font-size:22px;font-weight:800;color:var(--gold);text-align:center;margin-bottom:2px}
-.app-sub{font-size:12px;color:var(--muted);margin-bottom:24px;text-align:center}
-.login-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;width:100%;max-width:420px}
-.login-card h2{font-size:14px;color:var(--gold);margin-bottom:6px}
-.login-card p{font-size:11px;color:var(--muted);margin-bottom:14px;line-height:1.6}
-.lbl{font-size:10px;color:var(--muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
-.linput{width:100%;background:var(--dark);border:1.5px solid var(--border);color:var(--text);padding:10px 12px;border-radius:9px;font-size:12px;outline:none;margin-bottom:9px;font-family:monospace}
-.linput:focus{border-color:var(--gold)}
-.btn-login{width:100%;background:var(--gold);color:#fff;border:none;padding:13px;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer}
-.btn-login:disabled{opacity:.5;cursor:not-allowed}
-.login-status{font-size:11px;text-align:center;margin-top:10px;min-height:16px;color:var(--teal)}
-.login-status.err{color:var(--danger)}
-.hint-box{background:rgba(192,96,128,.08);border:1px solid rgba(192,96,128,.25);border-radius:10px;padding:13px;margin-top:14px;font-size:11px;color:var(--muted);line-height:1.8}
-.hint-box a{color:var(--gold);text-decoration:none;font-weight:600}
-.hint-box strong{color:var(--text)}
-.hstep{display:flex;gap:7px;margin-bottom:4px;align-items:flex-start}
-.hnum{background:var(--gold);color:#fff;font-weight:800;border-radius:50%;width:17px;height:17px;font-size:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
-.topbar{background:linear-gradient(135deg,var(--surface),var(--card));padding:10px 14px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:100;border-bottom:2px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,.5)}
-.topbar h1{font-size:14px;font-weight:700;flex:1;line-height:1.3}
-.t-total{font-size:15px;font-weight:800;color:var(--gold)}
-.sdot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--success);margin-left:3px;vertical-align:middle}
-.sdot.syncing{background:var(--gold);animation:pulse .8s infinite}
-.sdot.err{background:var(--danger)}
-.sync-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:5px 14px;display:flex;justify-content:space-between;font-size:10px;color:var(--muted)}
-.bnav{position:fixed;bottom:0;left:0;right:0;z-index:150;background:var(--surface);border-top:2px solid var(--border);display:flex}
-.ni-item{flex:1;padding:8px 4px 6px;text-align:center;cursor:pointer;font-size:9px;color:var(--muted);transition:color .2s}
-.ni-item .ni{font-size:18px;display:block;margin-bottom:2px}
-.ni-item.active{color:var(--gold)}
-.page{display:none;padding-bottom:70px}
-.page.active{display:block}
-.controls{padding:9px 12px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:53px;z-index:90}
-.srow{display:flex;gap:7px;margin-bottom:7px}
-.sbox{flex:1;background:var(--card);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:10px;font-size:14px;outline:none}
-.sbox:focus{border-color:var(--gold)}
-.mic-btn{background:var(--teal);border:none;color:#fff;padding:9px 12px;border-radius:10px;font-size:17px;cursor:pointer}
-.mic-btn.listening{background:var(--danger);animation:pulse 1s infinite}
-.catscroll{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none}
-.catscroll::-webkit-scrollbar{display:none}
-.cchip{white-space:nowrap;padding:5px 10px;border-radius:20px;font-size:10px;background:var(--card);border:1px solid var(--border);color:var(--muted);cursor:pointer;flex-shrink:0}
-.cchip.active{background:var(--teal);border-color:var(--teal);color:#fff;font-weight:700}
-.plist{padding:7px 10px}
-.pcard{background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;overflow:hidden;transition:border-color .15s}
-.pcard.hq{border-color:var(--gold)}
-.ptop{padding:9px 12px 7px}
-.pname{font-size:13px;font-weight:600;line-height:1.3;margin-bottom:2px}
-.pcat{font-size:9px;color:var(--muted)}
-.pnums{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid var(--border)}
-.pnc{padding:7px 8px;text-align:center}
-.pnc+.pnc{border-left:1px solid var(--border)}
-.pnl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px}
-.pnv{font-size:13px;font-weight:700}
-.pnv.qv{color:#fff}.pnv.cv{color:var(--gold);font-size:10px}.pnv.tv{color:var(--success)}
-.qin{width:100%;background:transparent;border:none;color:#fff;font-size:15px;font-weight:700;text-align:center;outline:none;font-family:inherit;padding:0}
-.qin::placeholder{color:var(--muted);font-weight:400;font-size:11px}
-.stitle{padding:12px 13px 4px;font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
-.prcard{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin:0 10px 7px;display:flex;align-items:center;gap:10px}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--dk);color:var(--tx);min-height:100vh;overflow-x:hidden}
+/* LOGIN */
+#ls{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;background:linear-gradient(160deg,#100820,#1a0e2e 60%,#2a1040)}
+.lg{font-size:60px;margin-bottom:6px}
+.at{font-size:22px;font-weight:800;color:var(--pk);text-align:center;margin-bottom:2px}
+.as{font-size:12px;color:var(--mu);margin-bottom:24px;text-align:center}
+.lc{background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:22px;width:100%;max-width:420px}
+.lc h2{font-size:14px;color:var(--pk);margin-bottom:6px}
+.lc p{font-size:11px;color:var(--mu);margin-bottom:14px;line-height:1.6}
+.ll{font-size:10px;color:var(--mu);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+.li{width:100%;background:var(--dk);border:1.5px solid var(--bd);color:var(--tx);padding:10px 12px;border-radius:9px;font-size:12px;outline:none;margin-bottom:9px;font-family:monospace}
+.li:focus{border-color:var(--pk)}
+.lb{width:100%;background:var(--pk);color:#fff;border:none;padding:13px;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer}
+.lb:disabled{opacity:.5;cursor:not-allowed}
+.lst{font-size:11px;text-align:center;margin-top:10px;min-height:16px;color:var(--pu)}
+.lst.er{color:var(--re)}
+.hb{background:rgba(192,96,128,.08);border:1px solid rgba(192,96,128,.25);border-radius:10px;padding:13px;margin-top:14px;font-size:11px;color:var(--mu);line-height:1.7}
+.hb strong{color:var(--tx)}
+/* TOPBAR */
+.tb{background:linear-gradient(135deg,var(--sf),var(--cd));padding:10px 14px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:100;border-bottom:2px solid var(--bd);box-shadow:0 4px 20px rgba(0,0,0,.5)}
+.tb h1{font-size:14px;font-weight:700;flex:1;line-height:1.3}
+.tt{font-size:15px;font-weight:800;color:var(--pk)}
+.sd{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--gr);margin-left:3px;vertical-align:middle}
+.sd.sy{background:var(--pk);animation:pu .8s infinite}
+.sd.er{background:var(--re)}
+.sb{background:var(--sf);border-bottom:1px solid var(--bd);padding:5px 14px;display:flex;justify-content:space-between;font-size:10px;color:var(--mu)}
+/* NAV */
+.bn{position:fixed;bottom:0;left:0;right:0;z-index:150;background:var(--sf);border-top:2px solid var(--bd);display:flex}
+.ni{flex:1;padding:8px 4px 6px;text-align:center;cursor:pointer;font-size:9px;color:var(--mu);transition:color .2s}
+.ni .ic{font-size:18px;display:block;margin-bottom:2px}
+.ni.ac{color:var(--pk)}
+.pg{display:none;padding-bottom:70px}
+.pg.ac{display:block}
+/* CONTROLS */
+.ct{padding:9px 12px;background:var(--sf);border-bottom:1px solid var(--bd);position:sticky;top:53px;z-index:90}
+.sr{display:flex;gap:7px;margin-bottom:7px}
+.sx{flex:1;background:var(--cd);border:1px solid var(--bd);color:var(--tx);padding:9px 12px;border-radius:10px;font-size:14px;outline:none}
+.sx:focus{border-color:var(--pk)}
+.mb{background:var(--pu);border:none;color:#fff;padding:9px 12px;border-radius:10px;font-size:17px;cursor:pointer;flex-shrink:0}
+.mb.li2{background:var(--re);animation:pu 1s infinite}
+.cs{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none}
+.cs::-webkit-scrollbar{display:none}
+.cc{white-space:nowrap;padding:5px 10px;border-radius:20px;font-size:10px;background:var(--cd);border:1px solid var(--bd);color:var(--mu);cursor:pointer;flex-shrink:0;transition:all .15s}
+.cc.ac{background:var(--pu);border-color:var(--pu);color:#fff;font-weight:700}
+/* PRODUCT CARDS */
+.pl{padding:7px 10px}
+.pc{background:var(--cd);border:1px solid var(--bd);border-radius:12px;margin-bottom:8px;overflow:hidden;transition:border-color .15s}
+.pc.hq{border-color:var(--pk)}
+.pt{padding:9px 12px 7px}
+.pn{font-size:13px;font-weight:600;line-height:1.3;margin-bottom:2px}
+.pg2{font-size:9px;color:var(--mu)}
+.pm{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid var(--bd)}
+.pmc{padding:7px 8px;text-align:center}
+.pmc+.pmc{border-left:1px solid var(--bd)}
+.pml{font-size:9px;color:var(--mu);text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px}
+.pmv{font-size:13px;font-weight:700}
+.pmv.qv{color:#fff}.pmv.cv{color:var(--pk);font-size:10px}.pmv.tv{color:var(--gr)}
+.qi{width:100%;background:transparent;border:none;color:#fff;font-size:15px;font-weight:700;text-align:center;outline:none;font-family:inherit;padding:0}
+.qi::placeholder{color:var(--mu);font-weight:400;font-size:11px}
+/* PRICES */
+.st2{padding:12px 13px 4px;font-size:9px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:1px}
+.prc{background:var(--cd);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;margin:0 10px 7px;display:flex;align-items:center;gap:10px}
 .pri{flex:1;min-width:0}
-.prname{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.prunit{font-size:9px;color:var(--muted);margin-top:1px}
-.prinput{width:86px;background:var(--dark);border:1.5px solid var(--border);color:var(--gold);padding:7px 5px;border-radius:8px;font-size:12px;text-align:center;outline:none;font-weight:700;flex-shrink:0}
-.prinput:focus{border-color:var(--gold)}
-.sescard{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:13px;margin:0 11px 8px;cursor:pointer}
-.sesdate{font-size:12px;font-weight:700;color:var(--gold)}
-.sestot{font-size:16px;font-weight:800;color:var(--success);margin-top:6px}
-.ss{background:var(--card);border-radius:12px;margin:0 11px 11px;padding:14px}
-.ss h3{font-size:13px;font-weight:700;margin-bottom:9px;color:var(--gold)}
+.prn{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pru{font-size:9px;color:var(--mu);margin-top:1px}
+.pin{width:86px;background:var(--dk);border:1.5px solid var(--bd);color:var(--pk);padding:7px 5px;border-radius:8px;font-size:12px;text-align:center;outline:none;font-weight:700;flex-shrink:0}
+.pin:focus{border-color:var(--pk)}
+/* HISTORY */
+.hsc{background:var(--cd);border:1px solid var(--bd);border-radius:12px;padding:13px;margin:0 11px 8px;cursor:pointer}
+.hsd{font-size:12px;font-weight:700;color:var(--pk)}
+.hst{font-size:16px;font-weight:800;color:var(--gr);margin-top:6px}
+/* SETTINGS */
+.ss{background:var(--cd);border-radius:12px;margin:0 11px 11px;padding:14px}
+.ss h3{font-size:13px;font-weight:700;margin-bottom:9px;color:var(--pk)}
 .fg{margin-bottom:9px}
-.fg label{font-size:9px;color:var(--muted);display:block;margin-bottom:3px;text-transform:uppercase}
-.fg input,.fg select{width:100%;background:var(--dark);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:12px;outline:none}
+.fg label{font-size:9px;color:var(--mu);display:block;margin-bottom:3px;text-transform:uppercase}
+.fg input,.fg select{width:100%;background:var(--dk);border:1px solid var(--bd);color:var(--tx);padding:8px 10px;border-radius:8px;font-size:12px;outline:none}
 .fr{display:flex;gap:7px}.fr .fg{flex:1}
 .btn{width:100%;border:none;padding:12px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;margin-bottom:7px}
-.btn-gold{background:var(--gold);color:#fff}
-.btn-teal{background:var(--teal);color:#fff}
-.btn-danger{background:transparent;color:var(--danger);border:1px solid var(--danger)}
-.btn-dark{background:var(--dark);color:var(--text);border:1px solid var(--border)}
-.mwrap{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:400;align-items:flex-end}
-.mwrap.open{display:flex}
-.mbox{background:var(--surface);border-radius:18px 18px 0 0;padding:20px;width:100%;max-height:92vh;overflow-y:auto}
-.uchip{padding:7px 10px;border-radius:8px;font-size:11px;font-weight:600;background:var(--card);border:1px solid var(--border);color:var(--muted);cursor:pointer}
-.uchip.active{background:var(--gold);border-color:var(--gold);color:#fff}
-.phitem{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:11px;margin-bottom:8px}
-.phitem.matched{border-color:var(--gold)}
-.phmsel{width:100%;margin-top:6px;background:var(--dark);border:1px solid var(--border);color:var(--text);padding:6px 8px;border-radius:7px;font-size:11px;outline:none}
-.badge{display:inline-block;background:var(--teal);color:#fff;font-size:9px;padding:1px 5px;border-radius:8px;margin-left:3px;vertical-align:middle}
-.empty{text-align:center;padding:50px 20px;color:var(--muted)}
-.empty-icon{font-size:44px;margin-bottom:10px}
-.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--success);color:#fff;padding:9px 18px;border-radius:20px;font-size:12px;font-weight:700;z-index:600;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;max-width:90vw}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.bp{background:var(--pk);color:#fff}
+.bt{background:var(--pu);color:#fff}
+.bd2{background:transparent;color:var(--re);border:1px solid var(--re)}
+.bk{background:var(--dk);color:var(--tx);border:1px solid var(--bd)}
+/* MODALS */
+.mw{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:400;align-items:flex-end}
+.mw.op{display:flex}
+.mb2{background:var(--sf);border-radius:18px 18px 0 0;padding:20px;width:100%;max-height:92vh;overflow-y:auto}
+.uc{padding:7px 10px;border-radius:8px;font-size:11px;font-weight:600;background:var(--cd);border:1px solid var(--bd);color:var(--mu);cursor:pointer}
+.uc.ac{background:var(--pk);border-color:var(--pk);color:#fff}
+.phi{background:var(--cd);border:1px solid var(--bd);border-radius:10px;padding:11px;margin-bottom:8px}
+.phi.mk{border-color:var(--pk)}
+.phs{width:100%;margin-top:6px;background:var(--dk);border:1px solid var(--bd);color:var(--tx);padding:6px 8px;border-radius:7px;font-size:11px;outline:none}
+/* MISC */
+.bg{display:inline-block;background:var(--pu);color:#fff;font-size:9px;padding:1px 5px;border-radius:8px;margin-left:3px;vertical-align:middle}
+.em{text-align:center;padding:50px 20px;color:var(--mu)}
+.ei{font-size:44px;margin-bottom:10px}
+.tk{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--gr);color:#fff;padding:9px 18px;border-radius:20px;font-size:12px;font-weight:700;z-index:600;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;max-width:90vw}
+.tk.sh{opacity:1;transform:translateX(-50%) translateY(0)}
+@keyframes pu{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes sp{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
 
-<div id="login-screen">
-  <div class="logo">🎂</div>
-  <div class="app-title">Dulce Sofía</div>
-  <div class="app-sub">Pastelería — Inventario de Insumos</div>
-  <div class="login-card">
+<div id="ls">
+  <div class="lg">🎂</div>
+  <div class="at">Dulce Sofía</div>
+  <div class="as">Pastelería — Inventario de Insumos</div>
+  <div class="lc">
     <h2>☁️ Conectar con Firebase</h2>
-    <p>Ingresa los datos de tu proyecto Firebase. Se guardan en este dispositivo automáticamente.</p>
-    <label class="lbl">API Key</label>
-    <input class="linput" id="fb-apikey" placeholder="AIzaSy..." autocomplete="off" spellcheck="false">
-    <label class="lbl">Project ID</label>
-    <input class="linput" id="fb-projectid" placeholder="dulcesofia-xxxxx" autocomplete="off" spellcheck="false">
-    <button class="btn-login" id="btn-login" onclick="doLogin()">Conectar →</button>
-    <div class="login-status" id="login-status"></div>
-    <div class="hint-box">
-      <strong>Datos de Firebase (los mismos que ya tienes):</strong>
-      <div style="margin-top:8px;font-size:11px;color:var(--muted)">Usa el apiKey y projectId del proyecto DulceSofia que ya configuraste. Si los olvidaste: Firebase Console → DulceSofia → Configuración ⚙️ → Tu app web.</div>
-    </div>
+    <p>Ingresa los datos de tu proyecto Firebase. Se guardan en este dispositivo automáticamente para las próximas visitas.</p>
+    <label class="ll">API Key</label>
+    <input class="li" id="fak" placeholder="AIzaSy..." autocomplete="off" spellcheck="false">
+    <label class="ll">Project ID</label>
+    <input class="li" id="fpi" placeholder="dulcesofia-xxxxx" autocomplete="off" spellcheck="false">
+    <button class="lb" id="btn-login" onclick="doLogin()">Conectar →</button>
+    <div class="lst" id="lst"></div>
+    <div class="hb"><strong>Usa los mismos datos del proyecto DulceSofia que ya tienes en Firebase.</strong><br>Si los necesitas: Firebase Console → DulceSofia → ⚙️ Configuración → Tu app web → firebaseConfig</div>
   </div>
 </div>
 
-<div id="main-app" style="display:none">
-  <div class="topbar">
+<div id="app" style="display:none">
+  <div class="tb">
     <span style="font-size:20px">🎂</span>
-    <h1>Dulce Sofía<br><span style="font-size:9px;color:var(--muted);font-weight:400">Pastelería</span></h1>
+    <h1>Dulce Sofía<br><span style="font-size:9px;color:var(--mu);font-weight:400">Pastelería</span></h1>
     <div style="text-align:right">
-      <div style="font-size:9px;color:var(--muted)">Firebase ☁️</div>
-      <div class="t-total"><span id="topbar-total">$0</span> <span class="sdot" id="sdot"></span></div>
+      <div style="font-size:9px;color:var(--mu)">Firebase ☁️</div>
+      <div class="tt"><span id="tt">$0</span> <span class="sd" id="sd"></span></div>
     </div>
   </div>
-  <div class="sync-bar"><span id="sync-label">Conectando...</span></div>
-  <div class="bnav">
-    <div class="ni-item active" onclick="showPage('inv')" id="nav-inv"><span class="ni">📋</span>Inventario</div>
-    <div class="ni-item" onclick="showPage('prices')" id="nav-prices"><span class="ni">💰</span>Precios</div>
-    <div class="ni-item" onclick="showPage('history')" id="nav-history"><span class="ni">📅</span>Historial</div>
-    <div class="ni-item" onclick="showPage('settings')" id="nav-settings"><span class="ni">⚙️</span>Config</div>
+  <div class="sb"><span id="sl">Conectando...</span></div>
+  <div class="bn">
+    <div class="ni ac" onclick="go('inv')" id="n-inv"><span class="ic">📋</span>Inventario</div>
+    <div class="ni" onclick="go('prices')" id="n-prices"><span class="ic">💰</span>Precios</div>
+    <div class="ni" onclick="go('history')" id="n-history"><span class="ic">📅</span>Historial</div>
+    <div class="ni" onclick="go('settings')" id="n-settings"><span class="ic">⚙️</span>Config</div>
   </div>
 
-  <div class="page active" id="page-inv">
-    <div class="controls">
-      <div class="srow">
-        <input type="search" class="sbox" id="search-input" placeholder="🔍 Buscar insumo..." autocomplete="off" autocorrect="off" spellcheck="false">
-        <button class="mic-btn" id="mic-btn" onclick="toggleVoice()">🎙️</button>
+  <!-- INVENTARIO -->
+  <div class="pg ac" id="p-inv">
+    <div class="ct">
+      <div class="sr">
+        <input type="search" class="sx" id="si" placeholder="🔍 Buscar insumo..." autocomplete="off" autocorrect="off" spellcheck="false">
+        <button class="mb" id="mic" onclick="toggleVoice()">🎙️</button>
       </div>
-      <div class="catscroll" id="cat-scroll"></div>
+      <div class="cs" id="cats"></div>
     </div>
-    <div class="plist" id="prod-list"></div>
+    <div class="pl" id="prods"></div>
   </div>
 
-  <div class="page" id="page-prices">
+  <!-- PRECIOS -->
+  <div class="pg" id="p-prices">
     <div style="display:flex;gap:8px;padding:10px 12px 4px">
-      <button onclick="openCalc()" style="flex:1;background:var(--gold);color:#fff;border:none;padding:10px 6px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer">🧮 Calcular<br><span style="font-size:10px;font-weight:400">precio/unidad</span></button>
-      <button onclick="openPhoto()" style="flex:1;background:var(--teal);color:#fff;border:none;padding:10px 6px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer">📷 Foto factura<br><span style="font-size:10px;font-weight:400">actualizar automático</span></button>
+      <button onclick="openCalc()" style="flex:1;background:var(--pk);color:#fff;border:none;padding:10px 6px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer">🧮 Calcular<br><span style="font-size:10px;font-weight:400">precio/unidad</span></button>
+      <button onclick="openPhoto()" style="flex:1;background:var(--pu);color:#fff;border:none;padding:10px 6px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer">📷 Foto factura<br><span style="font-size:10px;font-weight:400">leer automático</span></button>
     </div>
     <div style="padding:6px 12px 8px">
-      <input type="search" class="sbox" style="width:100%" id="pr-search" placeholder="🔍 Buscar insumo..." autocomplete="off" autocorrect="off" spellcheck="false">
+      <input type="search" class="sx" style="width:100%" id="prs" placeholder="🔍 Buscar insumo..." autocomplete="off" autocorrect="off" spellcheck="false">
     </div>
-    <div id="pr-list"></div>
+    <div id="prl"></div>
   </div>
 
-  <div class="page" id="page-history">
-    <div class="stitle">Inventarios guardados ☁️</div>
-    <div id="hist-list"></div>
+  <!-- HISTORIAL -->
+  <div class="pg" id="p-history">
+    <div class="st2">Inventarios guardados ☁️</div>
+    <div id="hl"></div>
   </div>
 
-  <div class="page" id="page-settings">
-    <div class="stitle" style="padding-top:13px">Sincronización</div>
+  <!-- CONFIG -->
+  <div class="pg" id="p-settings">
+    <div class="st2" style="padding-top:13px">Sincronización</div>
     <div class="ss">
       <h3>☁️ Estado Firebase</h3>
-      <div style="font-size:11px;color:var(--muted);margin-bottom:11px;line-height:1.6" id="sess-info">—</div>
-      <button class="btn btn-teal" onclick="forcSync()">🔄 Cargar datos más recientes</button>
-      <button class="btn btn-gold" onclick="saveSession()">💾 Guardar inventario en historial</button>
-      <button class="btn btn-danger" onclick="clearCurrent()">🗑️ Limpiar cantidades</button>
-      <button class="btn btn-dark" onclick="doLogout()">🚪 Cambiar proyecto</button>
+      <div style="font-size:11px;color:var(--mu);margin-bottom:11px;line-height:1.6" id="ssi">—</div>
+      <button class="btn bt" onclick="forcSync()">🔄 Cargar datos más recientes</button>
+      <button class="btn bp" onclick="saveSession()">💾 Guardar inventario en historial</button>
+      <button class="btn bd2" onclick="clearCurrent()">🗑️ Limpiar cantidades</button>
+      <button class="btn bk" onclick="doLogout()">🚪 Cambiar proyecto</button>
     </div>
-    <div class="stitle">Agregar Insumo Nuevo</div>
+    <div class="st2">Agregar Insumo Nuevo</div>
     <div class="ss">
-      <div class="fg"><label>Nombre</label><input type="text" id="new-name" placeholder="Ej: Harina integral"></div>
+      <div class="fg"><label>Nombre</label><input type="text" id="nn" placeholder="Ej: Harina integral"></div>
       <div class="fg">
         <label>Categoría</label>
         <div style="display:flex;gap:6px;align-items:center">
-          <select id="new-cat" style="flex:1;background:var(--dark);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:12px;outline:none"></select>
-          <button onclick="addCategoryPrompt()" style="background:var(--teal);color:#fff;border:none;padding:8px 10px;border-radius:8px;font-size:12px;cursor:pointer;white-space:nowrap">+ Nueva</button>
+          <select id="nc" style="flex:1;background:var(--dk);border:1px solid var(--bd);color:var(--tx);padding:8px 10px;border-radius:8px;font-size:12px;outline:none"></select>
+          <button onclick="newCat()" style="background:var(--pu);color:#fff;border:none;padding:8px 11px;border-radius:8px;font-size:12px;cursor:pointer;white-space:nowrap">+ Nueva</button>
         </div>
       </div>
       <div class="fr">
         <div class="fg"><label>Unidad</label>
-          <select id="new-unit" style="background:var(--dark);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:12px;outline:none;width:100%">
-            <option value="g">Gramos (g)</option>
-            <option value="ml">Mililitros (ml)</option>
-            <option value="Und">Unidad (Und)</option>
-            <option value="cm">Centímetros (cm)</option>
-            <option value="mt">Metros (mt)</option>
-            <option value="Paquete">Paquete</option>
-            <option value="Caja">Caja</option>
-            <option value="Rollo">Rollo</option>
-            <option value="Tarro">Tarro</option>
+          <select id="nu" style="width:100%;background:var(--dk);border:1px solid var(--bd);color:var(--tx);padding:8px 10px;border-radius:8px;font-size:12px;outline:none">
+            <option value="g">Gramos (g)</option><option value="ml">Mililitros (ml)</option>
+            <option value="Und">Unidad (Und)</option><option value="cm">Centímetros (cm)</option>
+            <option value="mt">Metros (mt)</option><option value="Paquete">Paquete</option>
+            <option value="Caja">Caja</option><option value="Rollo">Rollo</option><option value="Tarro">Tarro</option>
           </select>
         </div>
-        <div class="fg"><label>Costo por unidad ($)</label><input type="number" id="new-cost" placeholder="0" step="0.0001" inputmode="decimal"></div>
+        <div class="fg"><label>Costo por unidad ($)</label><input type="number" id="nco" placeholder="0" step="0.0001" inputmode="decimal"></div>
       </div>
-      <button class="btn btn-teal" onclick="addProduct()">➕ Agregar Insumo</button>
+      <button class="btn bt" onclick="addProd()">➕ Agregar Insumo</button>
     </div>
-    <div class="stitle">Informe Excel</div>
+    <div class="st2">Informe Excel</div>
     <div class="ss">
-      <p style="font-size:11px;color:var(--muted);margin-bottom:11px">Excel ejecutivo con resumen por categoría y detalle completo.</p>
-      <button class="btn btn-gold" onclick="exportExcel()">📊 Generar Informe Excel (.xlsx)</button>
+      <p style="font-size:11px;color:var(--mu);margin-bottom:11px">Excel ejecutivo con las 6 categorías, resumen y detalle totalizado.</p>
+      <button class="btn bp" onclick="exportExcel()">📊 Generar Informe Excel (.xlsx)</button>
     </div>
   </div>
 </div>
 
 <!-- MODAL CALCULADORA -->
-<div class="mwrap" id="modal-calc">
-  <div class="mbox" style="border-top:2px solid var(--gold)">
+<div class="mw" id="m-calc">
+  <div class="mb2" style="border-top:2px solid var(--pk)">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-      <h2 style="font-size:15px;color:var(--gold)">🧮 Calculadora Precio/Unidad</h2>
-      <button onclick="closeCalc()" style="background:var(--card);border:none;color:var(--text);padding:6px 12px;border-radius:8px;cursor:pointer">✕</button>
+      <h2 style="font-size:15px;color:var(--pk)">🧮 Calculadora Precio/Unidad</h2>
+      <button onclick="closeCalc()" style="background:var(--cd);border:none;color:var(--tx);padding:6px 12px;border-radius:8px;cursor:pointer">✕</button>
     </div>
-    <div class="fg"><label>Insumo</label>
-      <input type="search" id="calc-s" placeholder="Buscar insumo..." oninput="searchCalc()" autocomplete="off" style="width:100%;background:var(--dark);border:1px solid var(--border);color:var(--text);padding:9px 11px;border-radius:9px;font-size:13px;outline:none">
-      <div id="calc-res" style="background:var(--dark);border:1px solid var(--border);border-top:none;border-radius:0 0 9px 9px;max-height:150px;overflow-y:auto;display:none"></div>
-      <div id="calc-sel" style="display:none;margin-top:7px;background:rgba(192,96,128,.1);border:1px solid var(--gold);border-radius:8px;padding:7px 10px;font-size:11px;color:var(--gold)"></div>
+    <div class="fg">
+      <label>Insumo</label>
+      <input type="search" id="cs2" placeholder="Buscar insumo..." oninput="sCalc()" autocomplete="off" style="width:100%;background:var(--dk);border:1px solid var(--bd);color:var(--tx);padding:9px 11px;border-radius:9px;font-size:13px;outline:none">
+      <div id="cr" style="background:var(--dk);border:1px solid var(--bd);border-top:none;border-radius:0 0 9px 9px;max-height:150px;overflow-y:auto;display:none"></div>
+      <div id="csel" style="display:none;margin-top:7px;background:rgba(192,96,128,.1);border:1px solid var(--pk);border-radius:8px;padding:7px 10px;font-size:11px;color:var(--pk)"></div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
-      <div class="fg" style="margin:0"><label>Precio total ($)</label><input type="number" id="calc-p" placeholder="142000" inputmode="decimal" oninput="calcR()" style="width:100%;background:var(--dark);border:1px solid var(--border);color:var(--text);padding:9px 11px;border-radius:9px;font-size:14px;font-weight:700;outline:none"></div>
-      <div class="fg" style="margin:0"><label>Cantidad del empaque</label><input type="number" id="calc-q" placeholder="20000" inputmode="decimal" oninput="calcR()" style="width:100%;background:var(--dark);border:1px solid var(--border);color:var(--text);padding:9px 11px;border-radius:9px;font-size:14px;font-weight:700;outline:none"></div>
+      <div class="fg" style="margin:0"><label>Precio total ($)</label><input type="number" id="cp" placeholder="142000" inputmode="decimal" oninput="calcR()" style="width:100%;background:var(--dk);border:1px solid var(--bd);color:var(--tx);padding:9px 11px;border-radius:9px;font-size:14px;font-weight:700;outline:none"></div>
+      <div class="fg" style="margin:0"><label>Cantidad empaque</label><input type="number" id="cq" placeholder="20000" inputmode="decimal" oninput="calcR()" style="width:100%;background:var(--dk);border:1px solid var(--bd);color:var(--tx);padding:9px 11px;border-radius:9px;font-size:14px;font-weight:700;outline:none"></div>
     </div>
     <div class="fg"><label>Unidad</label>
       <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px">
-        <button class="uchip active" data-m="1000" onclick="selU(this,'kg → cada gramo')">kg → g</button>
-        <button class="uchip" data-m="1" onclick="selU(this,'g → cada gramo')">g → g</button>
-        <button class="uchip" data-m="1" onclick="selU(this,'unidad por unidad')">Unidades</button>
-        <button class="uchip" data-m="1000" onclick="selU(this,'L → cada ml')">L → ml</button>
-        <button class="uchip" data-m="1" onclick="selU(this,'ml → cada ml')">ml → ml</button>
+        <button class="uc ac" data-m="1000" onclick="selU(this,'kg→g')">kg → g</button>
+        <button class="uc" data-m="1" onclick="selU(this,'g→g')">g → g</button>
+        <button class="uc" data-m="1" onclick="selU(this,'Und')">Unidades</button>
+        <button class="uc" data-m="1000" onclick="selU(this,'L→ml')">L → ml</button>
+        <button class="uc" data-m="1" onclick="selU(this,'ml→ml')">ml → ml</button>
       </div>
-      <div id="ulbl" style="font-size:10px;color:var(--muted)">kg → cada gramo</div>
+      <div id="ul" style="font-size:10px;color:var(--mu)">kg→g</div>
     </div>
-    <div id="cbox" style="display:none;background:rgba(192,96,128,.1);border:1px solid var(--gold);border-radius:12px;padding:14px;margin-bottom:14px;text-align:center">
-      <div style="font-size:10px;color:var(--muted);margin-bottom:4px">COSTO POR UNIDAD</div>
-      <div id="cval" style="font-size:28px;font-weight:900;color:var(--gold)"></div>
-      <div id="cdet" style="font-size:11px;color:var(--muted);margin-top:4px"></div>
+    <div id="cb" style="display:none;background:rgba(192,96,128,.1);border:1px solid var(--pk);border-radius:12px;padding:14px;margin-bottom:14px;text-align:center">
+      <div style="font-size:10px;color:var(--mu);margin-bottom:4px">COSTO POR UNIDAD</div>
+      <div id="cv" style="font-size:28px;font-weight:900;color:var(--pk)"></div>
+      <div id="cd2" style="font-size:11px;color:var(--mu);margin-top:4px"></div>
     </div>
-    <button onclick="applyCalc()" style="width:100%;background:var(--gold);color:#fff;border:none;padding:12px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer">✅ Aplicar precio</button>
+    <button onclick="applyCalc()" style="width:100%;background:var(--pk);color:#fff;border:none;padding:12px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer">✅ Aplicar precio</button>
   </div>
 </div>
 
 <!-- MODAL FOTO -->
-<div class="mwrap" id="modal-photo">
-  <div class="mbox" style="border-top:2px solid var(--teal)">
+<div class="mw" id="m-photo">
+  <div class="mb2" style="border-top:2px solid var(--pu)">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-      <h2 style="font-size:15px;color:var(--teal)">📷 Leer Factura con IA</h2>
-      <button onclick="closePhoto()" style="background:var(--card);border:none;color:var(--text);padding:6px 12px;border-radius:8px;cursor:pointer">✕</button>
+      <h2 style="font-size:15px;color:var(--pu)">📷 Leer Factura con IA</h2>
+      <button onclick="closePhoto()" style="background:var(--cd);border:none;color:var(--tx);padding:6px 12px;border-radius:8px;cursor:pointer">✕</button>
     </div>
-    <div id="ph-drop" style="border:2px dashed var(--teal);border-radius:12px;padding:24px;text-align:center;cursor:pointer;margin-bottom:12px" onclick="document.getElementById('ph-file').click()">
+    <div id="phd" style="border:2px dashed var(--pu);border-radius:12px;padding:24px;text-align:center;cursor:pointer;margin-bottom:12px" onclick="document.getElementById('phf').click()">
       <div style="font-size:40px;margin-bottom:8px">📸</div>
-      <div style="font-size:13px;font-weight:700;color:var(--teal)">Toca para tomar foto</div>
+      <div style="font-size:13px;font-weight:700;color:var(--pu)">Toca para tomar foto o elegir archivo</div>
     </div>
-    <input type="file" id="ph-file" accept="image/*" capture="environment" style="display:none" onchange="handlePhoto(this)">
-    <div id="ph-prev" style="display:none;margin-bottom:12px"><img id="ph-img" style="width:100%;border-radius:10px;max-height:200px;object-fit:cover"></div>
-    <div id="ph-load" style="display:none;text-align:center;padding:16px">
-      <div style="font-size:30px;animation:spin 1s linear infinite;display:inline-block">⚙️</div>
-      <div style="font-size:13px;color:var(--teal);margin-top:8px">Leyendo factura...</div>
+    <input type="file" id="phf" accept="image/*" capture="environment" style="display:none" onchange="handlePhoto(this)">
+    <div id="php" style="display:none;margin-bottom:12px"><img id="phi" style="width:100%;border-radius:10px;max-height:200px;object-fit:cover"></div>
+    <div id="phl" style="display:none;text-align:center;padding:16px">
+      <div style="font-size:30px;animation:sp 1s linear infinite;display:inline-block">⚙️</div>
+      <div style="font-size:13px;color:var(--pu);margin-top:8px">Leyendo factura...</div>
     </div>
-    <div id="ph-out" style="display:none">
-      <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:9px">Insumos encontrados:</div>
-      <div id="ph-items"></div>
-      <button onclick="applyPhoto()" style="width:100%;margin-top:12px;background:var(--gold);color:#fff;border:none;padding:12px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer">✅ Aplicar precios</button>
+    <div id="pho" style="display:none">
+      <div style="font-size:13px;font-weight:700;color:var(--pk);margin-bottom:9px">Insumos encontrados:</div>
+      <div id="phitems"></div>
+      <button onclick="applyPhoto()" style="width:100%;margin-top:12px;background:var(--pk);color:#fff;border:none;padding:12px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer">✅ Aplicar precios</button>
     </div>
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="tk" id="tk"></div>
 
 <script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import { getFirestore, doc, setDoc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import {getFirestore,doc,setDoc,getDoc,onSnapshot} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
-const PRODUCTS_DB = [{"id":1,"description":"Aceite","category":"INSUMOS PASTELERÍA","unit":"ml","cost":7.1},{"id":2,"description":"Alcohol","category":"INSUMOS PASTELERÍA","unit":"g","cost":7.95},{"id":3,"description":"Almendras","category":"INSUMOS PASTELERÍA","unit":"g","cost":24.0},{"id":4,"description":"Ambientador","category":"INSUMOS PASTELERÍA","unit":"g","cost":2.55},{"id":5,"description":"arandanos","category":"INSUMOS PASTELERÍA","unit":"g","cost":58.33},{"id":6,"description":"Arepa Harina","category":"INSUMOS PASTELERÍA","unit":"g","cost":30.4},{"id":7,"description":"Arequipe","category":"INSUMOS PASTELERÍA","unit":"g","cost":11.228},{"id":8,"description":"Avena en hojuelas","category":"INSUMOS PASTELERÍA","unit":"g","cost":32.0},{"id":9,"description":"Azúcar corriente","category":"INSUMOS PASTELERÍA","unit":"g","cost":3.24},{"id":10,"description":"Azúcar pulverizada R/paila","category":"INSUMOS PASTELERÍA","unit":"g","cost":5.4},{"id":11,"description":"Azúcar pulverizada Santillana","category":"INSUMOS PASTELERÍA","unit":"g","cost":6.53},{"id":12,"description":"Banano","category":"INSUMOS PASTELERÍA","unit":"g","cost":3.0},{"id":13,"description":"Bandeja negra #1","category":"INSUMOS PASTELERÍA","unit":"Und","cost":108.5},{"id":14,"description":"Barquillo piazza","category":"INSUMOS PASTELERÍA","unit":"Und","cost":225.0},{"id":15,"description":"Bicarbonato de sodio","category":"INSUMOS PASTELERÍA","unit":"g","cost":5.9},{"id":16,"description":"Brillo tornasol","category":"INSUMOS PASTELERÍA","unit":"g","cost":26.0},{"id":17,"description":"Café instantaneo","category":"INSUMOS PASTELERÍA","unit":"g","cost":131.5},{"id":18,"description":"Caneca ron","category":"INSUMOS PASTELERÍA","unit":"Und","cost":23000.0},{"id":19,"description":"Canela en astilla","category":"INSUMOS PASTELERÍA","unit":"g","cost":166.67},{"id":20,"description":"Canela polvo","category":"INSUMOS PASTELERÍA","unit":"g","cost":62.0},{"id":21,"description":"Cerezas promedio x unidad 3.6g","category":"INSUMOS PASTELERÍA","unit":"g","cost":32.5},{"id":22,"description":"Chips de chocolate blanco","category":"INSUMOS PASTELERÍA","unit":"g","cost":41.99},{"id":23,"description":"Chips de chocolate negro","category":"INSUMOS PASTELERÍA","unit":"g","cost":33.9},{"id":24,"description":"Chocolate barra blanco puratos","category":"INSUMOS PASTELERÍA","unit":"g","cost":33.0},{"id":25,"description":"Chocolate barra negro puratos","category":"INSUMOS PASTELERÍA","unit":"g","cost":26.5},{"id":26,"description":"Chocolate ferrero","category":"INSUMOS PASTELERÍA","unit":"Und","cost":4700.0},{"id":27,"description":"Chocolate monedas","category":"INSUMOS PASTELERÍA","unit":"g","cost":25.4},{"id":28,"description":"Chocubierta chocolate liquido","category":"INSUMOS PASTELERÍA","unit":"g","cost":26.75},{"id":29,"description":"CMC","category":"INSUMOS PASTELERÍA","unit":"g","cost":50.4},{"id":30,"description":"Cobertura blanca","category":"INSUMOS PASTELERÍA","unit":"g","cost":40.0},{"id":31,"description":"Cobertura negra","category":"INSUMOS PASTELERÍA","unit":"g","cost":8.75},{"id":32,"description":"Cocoa","category":"INSUMOS PASTELERÍA","unit":"g","cost":59.15},{"id":33,"description":"Colmaíz","category":"INSUMOS PASTELERÍA","unit":"g","cost":5.8},{"id":34,"description":"Color caramelo","category":"INSUMOS PASTELERÍA","unit":"g","cost":12.7},{"id":35,"description":"Color en gel varios colores","category":"INSUMOS PASTELERÍA","unit":"ml","cost":366.67},{"id":36,"description":"Color gotero varios colores","category":"INSUMOS PASTELERÍA","unit":"ml","cost":216.67},{"id":37,"description":"Colorante Rojo escarlata","category":"INSUMOS PASTELERÍA","unit":"g","cost":49.0},{"id":38,"description":"Concentrado de arándanos","category":"INSUMOS PASTELERÍA","unit":"g","cost":78.5},{"id":39,"description":"Concentrado de limón","category":"INSUMOS PASTELERÍA","unit":"g","cost":44.0},{"id":40,"description":"Concentrado de naranja","category":"INSUMOS PASTELERÍA","unit":"g","cost":68.8},{"id":41,"description":"Crema base","category":"INSUMOS PASTELERÍA","unit":"g","cost":17.5},{"id":42,"description":"Crema de leche","category":"INSUMOS PASTELERÍA","unit":"g","cost":17.14},{"id":43,"description":"Crema para decorar Kellers x 2 lt","category":"INSUMOS PASTELERÍA","unit":"Tarro","cost":35000.0},{"id":44,"description":"Cucurucho","category":"INSUMOS PASTELERÍA","unit":"Und","cost":220.0},{"id":45,"description":"Dióxido de titanio","category":"INSUMOS PASTELERÍA","unit":"g","cost":146.4},{"id":46,"description":"Durazno","category":"INSUMOS PASTELERÍA","unit":"g","cost":13.78},{"id":47,"description":"Emulsificante","category":"INSUMOS PASTELERÍA","unit":"g","cost":26.16},{"id":48,"description":"Escarcha","category":"INSUMOS PASTELERÍA","unit":"g","cost":26.0},{"id":49,"description":"Esencia de arequipe","category":"INSUMOS PASTELERÍA","unit":"ml","cost":33.0},{"id":50,"description":"Esencia de café Promapan","category":"INSUMOS PASTELERÍA","unit":"ml","cost":33.0},{"id":51,"description":"Esencia de café Santillana","category":"INSUMOS PASTELERÍA","unit":"ml","cost":30.0},{"id":52,"description":"Esencia de canela","category":"INSUMOS PASTELERÍA","unit":"ml","cost":33.0},{"id":53,"description":"Esencia de chocolate","category":"INSUMOS PASTELERÍA","unit":"ml","cost":20.1},{"id":54,"description":"Esencia de crema de whiskey","category":"INSUMOS PASTELERÍA","unit":"ml","cost":33.0},{"id":55,"description":"Esencia de hinojo","category":"INSUMOS PASTELERÍA","unit":"ml","cost":35.5},{"id":56,"description":"Esencia de ponqué","category":"INSUMOS PASTELERÍA","unit":"ml","cost":33.0},{"id":57,"description":"Esencia de vainilla","category":"INSUMOS PASTELERÍA","unit":"ml","cost":20.1},{"id":58,"description":"Esencia naranja","category":"INSUMOS PASTELERÍA","unit":"ml","cost":22.6},{"id":59,"description":"Esencia ron con pasas","category":"INSUMOS PASTELERÍA","unit":"ml","cost":33.0},{"id":60,"description":"Ferrero roché","category":"INSUMOS PASTELERÍA","unit":"Und","cost":1200.0},{"id":61,"description":"Figuras tarritos","category":"INSUMOS PASTELERÍA","unit":"g","cost":190.0},{"id":62,"description":"fresa grande","category":"INSUMOS PASTELERÍA","unit":"Und","cost":476.19},{"id":63,"description":"fresa mediana","category":"INSUMOS PASTELERÍA","unit":"Und","cost":204.55},{"id":64,"description":"fresa para mermelada","category":"INSUMOS PASTELERÍA","unit":"g","cost":10.99},{"id":65,"description":"Fruta cristalizada","category":"INSUMOS PASTELERÍA","unit":"g","cost":13.2},{"id":66,"description":"Frutos amarillos para mermelada","category":"INSUMOS PASTELERÍA","unit":"g","cost":9.33},{"id":67,"description":"Frutos rojos para mermelada","category":"INSUMOS PASTELERÍA","unit":"g","cost":16.45},{"id":68,"description":"Fécula","category":"INSUMOS PASTELERÍA","unit":"g","cost":4.64},{"id":69,"description":"Galleta minichips","category":"INSUMOS PASTELERÍA","unit":"Und","cost":93.75},{"id":70,"description":"Galleta recreo","category":"INSUMOS PASTELERÍA","unit":"g","cost":491.6667},{"id":71,"description":"Galleta triturada","category":"INSUMOS PASTELERÍA","unit":"g","cost":30.93},{"id":72,"description":"Gelatina sin sabor","category":"INSUMOS PASTELERÍA","unit":"g","cost":72.0},{"id":73,"description":"Glaseado","category":"INSUMOS PASTELERÍA","unit":"g","cost":7.92},{"id":74,"description":"Glicerina","category":"INSUMOS PASTELERÍA","unit":"g","cost":13.94},{"id":75,"description":"Glucosa","category":"INSUMOS PASTELERÍA","unit":"g","cost":16.6},{"id":76,"description":"Gomas trululu x 40g","category":"INSUMOS PASTELERÍA","unit":"g","cost":32.5},{"id":77,"description":"Gragea","category":"INSUMOS PASTELERÍA","unit":"g","cost":10.8},{"id":78,"description":"Grageas figuras","category":"INSUMOS PASTELERÍA","unit":"g","cost":13.6},{"id":79,"description":"Granulado de colores m&m","category":"INSUMOS PASTELERÍA","unit":"g","cost":77.18},{"id":80,"description":"Granulado lluvia chocolate","category":"INSUMOS PASTELERÍA","unit":"g","cost":46.264},{"id":81,"description":"Granulado lluvia colores","category":"INSUMOS PASTELERÍA","unit":"g","cost":52.308},{"id":82,"description":"Harina de almendras","category":"INSUMOS PASTELERÍA","unit":"g","cost":68.0},{"id":83,"description":"Harina haz de oros","category":"INSUMOS PASTELERÍA","unit":"g","cost":2.72},{"id":84,"description":"Hidrogenada Palmares","category":"INSUMOS PASTELERÍA","unit":"g","cost":7.73},{"id":85,"description":"Huevos","category":"INSUMOS PASTELERÍA","unit":"Und","cost":433.0},{"id":86,"description":"Leche en polvo","category":"INSUMOS PASTELERÍA","unit":"g","cost":23.33},{"id":87,"description":"Leche líquida","category":"INSUMOS PASTELERÍA","unit":"ml","cost":3.75},{"id":88,"description":"Licor de café","category":"INSUMOS PASTELERÍA","unit":"g","cost":30.0},{"id":89,"description":"Limón","category":"INSUMOS PASTELERÍA","unit":"Und","cost":200.0},{"id":90,"description":"Mamut","category":"INSUMOS PASTELERÍA","unit":"Und","cost":180.0},{"id":91,"description":"Mantequilla","category":"INSUMOS PASTELERÍA","unit":"g","cost":48.6},{"id":92,"description":"Maní","category":"INSUMOS PASTELERÍA","unit":"g","cost":17.0},{"id":93,"description":"maracuya fruta","category":"INSUMOS PASTELERÍA","unit":"g","cost":20.75},{"id":94,"description":"Margarina 5A","category":"INSUMOS PASTELERÍA","unit":"g","cost":9.27},{"id":95,"description":"Merengue","category":"INSUMOS PASTELERÍA","unit":"g","cost":30.0},{"id":96,"description":"Mermelada de durazno","category":"INSUMOS PASTELERÍA","unit":"g","cost":9.26},{"id":97,"description":"Milo x 2500g","category":"INSUMOS PASTELERÍA","unit":"g","cost":35.2},{"id":98,"description":"Mixo x 2500g","category":"INSUMOS PASTELERÍA","unit":"g","cost":23.2},{"id":99,"description":"Mora","category":"INSUMOS PASTELERÍA","unit":"g","cost":9.29},{"id":100,"description":"Nuez","category":"INSUMOS PASTELERÍA","unit":"g","cost":76.0},{"id":101,"description":"piña","category":"INSUMOS PASTELERÍA","unit":"g","cost":5.98},{"id":102,"description":"Polvo dorado","category":"INSUMOS PASTELERÍA","unit":"g","cost":320.0},{"id":103,"description":"Polvo para hornear","category":"INSUMOS PASTELERÍA","unit":"g","cost":20.2},{"id":104,"description":"Premezcla bizcochuelo","category":"INSUMOS PASTELERÍA","unit":"g","cost":16.0},{"id":105,"description":"Premezcla zanahoria","category":"INSUMOS PASTELERÍA","unit":"g","cost":3.04},{"id":106,"description":"Queso crema","category":"INSUMOS PASTELERÍA","unit":"g","cost":21.28},{"id":107,"description":"Queso cuajada","category":"INSUMOS PASTELERÍA","unit":"g","cost":15.8},{"id":108,"description":"Relleno de maracuyá","category":"INSUMOS PASTELERÍA","unit":"g","cost":9.73},{"id":109,"description":"Relleno fresa","category":"INSUMOS PASTELERÍA","unit":"g","cost":8.0},{"id":110,"description":"Relleno frutos rojos","category":"INSUMOS PASTELERÍA","unit":"g","cost":8.0},{"id":111,"description":"Relleno maracuyá","category":"INSUMOS PASTELERÍA","unit":"g","cost":5.63},{"id":112,"description":"Relleno mora","category":"INSUMOS PASTELERÍA","unit":"g","cost":8.0},{"id":113,"description":"Sal","category":"INSUMOS PASTELERÍA","unit":"g","cost":3.0},{"id":114,"description":"Semillas de amapola","category":"INSUMOS PASTELERÍA","unit":"g","cost":78.0},{"id":115,"description":"Sorbato de potasio","category":"INSUMOS PASTELERÍA","unit":"g","cost":34.8},{"id":116,"description":"Vinagre","category":"INSUMOS PASTELERÍA","unit":"ml","cost":2.51},{"id":117,"description":"Vino","category":"INSUMOS PASTELERÍA","unit":"ml","cost":7.0},{"id":118,"description":"Vitina","category":"INSUMOS PASTELERÍA","unit":"g","cost":10.4664},{"id":119,"description":"Zanahoria","category":"INSUMOS PASTELERÍA","unit":"g","cost":6.0},{"id":120,"description":"Zumo de limón","category":"INSUMOS PASTELERÍA","unit":"ml","cost":5.0},{"id":121,"description":"Ácido sorbico","category":"INSUMOS PASTELERÍA","unit":"g","cost":31.3},{"id":122,"description":"Azúcar en sobres","category":"GRECA (CAFÉ)","unit":"g","cost":7.0},{"id":123,"description":"cafe en grano","category":"GRECA (CAFÉ)","unit":"g","cost":49.6},{"id":124,"description":"Blonda # 15.5","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":135.0},{"id":125,"description":"Blonda # 17","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":156.75},{"id":126,"description":"Blonda # 21","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":234.75},{"id":127,"description":"Blonda # 24.5","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":223.0},{"id":128,"description":"Blonda # 26","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":360.5},{"id":129,"description":"Blonda # 30","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":448.5},{"id":130,"description":"Bolsa 7x12","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":18.5},{"id":131,"description":"Bolsa aluminio","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":24.6},{"id":132,"description":"Bolsa p&P","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":147.0},{"id":133,"description":"Bolsa t15","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":64.0},{"id":134,"description":"Bolsa t25","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":90.0},{"id":135,"description":"Bolsa t30","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":30.0},{"id":136,"description":"Bolsa t40","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":120.0},{"id":137,"description":"Caja maletin 1/2 Distriuno","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":1450.0},{"id":138,"description":"Caja maletin 1/2 Isafrut","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":1250.0},{"id":139,"description":"Caja maletin 1/4","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":1700.0},{"id":140,"description":"Caja maletin dos libras","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":3850.0},{"id":141,"description":"Caja maletin libra","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":2300.0},{"id":142,"description":"Caja maletin libra y media","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":3200.0},{"id":143,"description":"Capacillos #2","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":260.0},{"id":144,"description":"Capacillos #5","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":330.0},{"id":145,"description":"Cartulina escarchada","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":3100.0},{"id":146,"description":"Cuchara Bon yurt","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":75.0},{"id":147,"description":"cuchara peq x100","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":26.0},{"id":148,"description":"Cuchara sopera","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":65.1},{"id":149,"description":"Domo #17","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":1542.0},{"id":150,"description":"Domo #22","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":2589.0},{"id":151,"description":"Domo #28 libra","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":2862.0},{"id":152,"description":"Domo 1 1/2","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":4950.0},{"id":153,"description":"Domo milhojas x 50 und","category":"DESECHABLES Y EMPAQUES","unit":"Paquete","cost":350.0},{"id":154,"description":"DomoMinipack cuadrado caja genovesa","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":629.5},{"id":155,"description":"Estras cm","category":"DESECHABLES Y EMPAQUES","unit":"cm","cost":55.0},{"id":156,"description":"Facturero","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":2500.0},{"id":157,"description":"Lámina icopor #20","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":8500.0},{"id":158,"description":"mezclador de madera","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":8.2},{"id":159,"description":"Molde aluminio  Cup cake x 50und","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":172.0},{"id":160,"description":"Molde aluminio mini lasagna","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":270.0},{"id":161,"description":"P.P 4x8","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":19.5},{"id":162,"description":"Palillo de dientes","category":"DESECHABLES Y EMPAQUES","unit":"Caja","cost":750.0},{"id":163,"description":"Palillo hamburguesa","category":"DESECHABLES Y EMPAQUES","unit":"Caja","cost":1440.0},{"id":164,"description":"Papel metalizado pliego","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":1300.0},{"id":165,"description":"Pincho 30cm x100 und","category":"DESECHABLES Y EMPAQUES","unit":"Paquete","cost":6100.0},{"id":166,"description":"Porta cupcake","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":428.75},{"id":167,"description":"Porta cupcake x 2","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":1650.0},{"id":168,"description":"Porta cupcake x 4","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":1650.0},{"id":169,"description":"Porta cupcake x 6","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":1650.0},{"id":170,"description":"Porta globo soporte torta","category":"DESECHABLES Y EMPAQUES","unit":"Paquete","cost":20000.0},{"id":171,"description":"Vinipel","category":"DESECHABLES Y EMPAQUES","unit":"Rollo","cost":48900.0},{"id":172,"description":"Bolsa basura","category":"ASEO","unit":"Und","cost":290.3333},{"id":173,"description":"desengrasante","category":"ASEO","unit":"ml","cost":3.47},{"id":174,"description":"deterpisos ambientador","category":"ASEO","unit":"ml","cost":2.74},{"id":175,"description":"Guantes","category":"ASEO","unit":"Caja","cost":7000.0},{"id":176,"description":"hipoclorito","category":"ASEO","unit":"ml","cost":3.52},{"id":177,"description":"jabon de manos","category":"ASEO","unit":"ml","cost":4.41},{"id":178,"description":"jabon neutro","category":"ASEO","unit":"ml","cost":4.45},{"id":179,"description":"Toalla manos","category":"ASEO","unit":"Und","cost":3500.0},{"id":180,"description":"Caja volcán","category":"DECORACIÓN","unit":"Und","cost":1312.5},{"id":181,"description":"Cinta estampada 50 cm","category":"DECORACIÓN","unit":"Und","cost":3900.0},{"id":182,"description":"Cinta impronta","category":"DECORACIÓN","unit":"cm","cost":8.0},{"id":183,"description":"Cinta metalizada 25 cm","category":"DECORACIÓN","unit":"cm","cost":2286.0},{"id":184,"description":"Cinta metalizada 50 cm","category":"DECORACIÓN","unit":"cm","cost":4572.0},{"id":185,"description":"Cinta texturizada escarchada 50 cm","category":"DECORACIÓN","unit":"cm","cost":4572.0},{"id":186,"description":"Coronas Grandes","category":"DECORACIÓN","unit":"Und","cost":4000.0},{"id":187,"description":"Coronas Medianas","category":"DECORACIÓN","unit":"Und","cost":3200.0},{"id":188,"description":"Coronas pequeñas","category":"DECORACIÓN","unit":"Und","cost":1800.0},{"id":189,"description":"Esfera color amarillo","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":190,"description":"Esfera color azul","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":191,"description":"Esfera color beige","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":192,"description":"Esfera color blanco y negro","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":193,"description":"Esfera color dorado","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":194,"description":"Esfera color gris","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":195,"description":"Esfera color lila","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":196,"description":"Esfera color lila claro","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":197,"description":"Esfera color marron","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":198,"description":"Esfera color plata","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":199,"description":"Esfera color rojo","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":200,"description":"Esfera color rosa","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":201,"description":"Esfera color variado","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":202,"description":"Esfera color verde","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":203,"description":"Feliz cum Volcan","category":"DECORACIÓN","unit":"Und","cost":2700.0},{"id":204,"description":"Foami liso pliego","category":"DECORACIÓN","unit":"Und","cost":3600.0},{"id":205,"description":"Perla dorada #2 precio 1","category":"DECORACIÓN","unit":"g","cost":40.0},{"id":206,"description":"Perla dorada #2 precio 2","category":"DECORACIÓN","unit":"g","cost":45.0},{"id":207,"description":"Perla dorada #4","category":"DECORACIÓN","unit":"g","cost":52.0},{"id":208,"description":"Perla dorada #8","category":"DECORACIÓN","unit":"g","cost":53.6},{"id":209,"description":"Plato desechable 23cm x 20","category":"DECORACIÓN","unit":"Und","cost":7600.0},{"id":210,"description":"Plato pando # 15.5","category":"DECORACIÓN","unit":"Und","cost":120.0},{"id":211,"description":"Resma papel carta","category":"DECORACIÓN","unit":"Und","cost":23.6},{"id":212,"description":"Servilleta","category":"DECORACIÓN","unit":"Und","cost":9.45},{"id":213,"description":"Silicona barra","category":"DECORACIÓN","unit":"g","cost":35.7143},{"id":214,"description":"Silicona líquida","category":"DECORACIÓN","unit":"g","cost":35.0},{"id":215,"description":"Tapa bandeja negra-domo","category":"DECORACIÓN","unit":"Und","cost":531.5},{"id":216,"description":"Topper comestible","category":"DECORACIÓN","unit":"Und","cost":1250.0},{"id":217,"description":"Topper digital cupcake","category":"DECORACIÓN","unit":"Und","cost":583.0},{"id":218,"description":"Topper digital tortas","category":"DECORACIÓN","unit":"Und","cost":10000.0},{"id":219,"description":"Topper madera","category":"DECORACIÓN","unit":"Und","cost":3000.0},{"id":220,"description":"Topper volcan meme","category":"DECORACIÓN","unit":"Und","cost":3300.0},{"id":221,"description":"Vaso desechable 7 oz","category":"DECORACIÓN","unit":"Und","cost":2107.0},{"id":222,"description":"Vela Candle","category":"DECORACIÓN","unit":"Paquete","cost":1800.0},{"id":223,"description":"Vela Festella","category":"DECORACIÓN","unit":"Paquete","cost":1800.0},{"id":224,"description":"Vela happy","category":"DECORACIÓN","unit":"Paquete","cost":1800.0},{"id":225,"description":"Vela negra","category":"DECORACIÓN","unit":"Und","cost":1575.0},{"id":226,"description":"Vela número","category":"DECORACIÓN","unit":"Und","cost":1750.0},{"id":227,"description":"Vela Party","category":"DECORACIÓN","unit":"Paquete","cost":1800.0},{"id":228,"description":"Vela pequeña  x8 und","category":"DECORACIÓN","unit":"Paquete","cost":1800.0},{"id":229,"description":"Vela pequeña variada x 24 und","category":"DECORACIÓN","unit":"Paquete","cost":1800.0},{"id":230,"description":"Vela plateada","category":"DECORACIÓN","unit":"Und","cost":1920.0},{"id":231,"description":"Vela viejito","category":"DECORACIÓN","unit":"Und","cost":4000.0},{"id":232,"description":"Vela volcán","category":"DECORACIÓN","unit":"Und","cost":1250.0},{"id":233,"description":"agua botellax600","category":"BEBIDAS NEVERA","unit":"Und","cost":1333.33},{"id":234,"description":"bretaña 1.5","category":"BEBIDAS NEVERA","unit":"Und","cost":3750.0},{"id":235,"description":"cerveza club colombia","category":"BEBIDAS NEVERA","unit":"Und","cost":3416.67},{"id":236,"description":"coca-cola 1.5","category":"BEBIDAS NEVERA","unit":"Und","cost":5416.67},{"id":237,"description":"coca-cola personal x400","category":"BEBIDAS NEVERA","unit":"Und","cost":2500.0},{"id":238,"description":"gaseosa 2.5 postobon","category":"BEBIDAS NEVERA","unit":"Und","cost":4587.5},{"id":239,"description":"Hit x 500 ml","category":"BEBIDAS NEVERA","unit":"Und","cost":2333.0}];
-const INIT_QTY    = {"_1":30794.0,"_5":78.0,"_7":21672.0,"_9":50000.0,"_11":22406.0,"_13":450.0,"_14":9.0,"_15":1930.0,"_16":736.0,"_20":456.0,"_18":0.5,"_21":3600.0,"_22":1342.0,"_23":1980.0,"_24":11000.0,"_25":592.0,"_28":16400.0,"_29":500.0,"_30":400.0,"_32":3694.0,"_34":9078.0,"_35":354.0,"_36":4041.0,"_38":1676.0,"_40":3044.0,"_42":15912.0,"_45":577.0,"_76":80.0,"_60":4.0,"_97":2092.0,"_47":4452.0,"_49":3440.0,"_52":2210.0,"_53":4262.0,"_55":604.0,"_56":11800.0,"_57":280.0,"_58":2652.0,"_59":3950.0,"_68":10592.0,"_70":15.0,"_44":10.0,"_71":2704.0,"_72":1366.0,"_74":4964.0,"_75":4826.0,"_77":5379.0,"_78":1506.0,"_80":1010.0,"_81":4422.0,"_79":458.0,"_48":1060.0,"_61":200.0,"_83":45000.0,"_84":20340.0,"_116":2162.0,"_65":2486.0,"_102":492.0,"_103":6904.0,"_106":2778.0,"_108":8000.0,"_109":12300.0,"_112":4100.0,"_90":20.0,"_92":5800.0,"_94":35474.0,"_86":9240.0,"_87":35800.0,"_89":288.0,"_117":19804.0,"_118":2594.0,"_119":1170.0,"_121":1000.0,"_85":189.0,"_115":614.0,"_37":1014.0,"_98":2192.0,"_114":158.0,"_43":1.5,"_100":1376.0,"_17":880.0,"_88":3210.0,"_123":500.0,"_124":288.0,"_125":143.0,"_126":6.0,"_128":179.0,"_129":232.0,"_130":1600.0,"_131":310.0,"_132":1200.0,"_133":300.0,"_134":300.0,"_135":600.0,"_136":200.0,"_143":12.0,"_144":40.0,"_147":900.0,"_148":40.0,"_149":50.0,"_150":172.0,"_151":19.0,"_152":7.0,"_166":168.0,"_167":144.0,"_168":128.0,"_169":8.0,"_153":7.0,"_154":200.0,"_171":1.0,"_137":82.0,"_139":79.0,"_140":12.0,"_141":49.0,"_142":8.0,"_157":3.0,"_160":152.0,"_159":250.0,"_163":9.0,"_162":10.0,"_165":3.5,"_164":59.0,"_170":3.0,"_179":1.0,"_175":1.0,"_172":50.0,"_180":219.0,"_225":3.0,"_226":48.0,"_230":11.0,"_231":17.0,"_229":6.0,"_228":8.0,"_223":12.0,"_224":2.0,"_227":5.0,"_222":1.0,"_181":20.0,"_183":15.0,"_184":17.5,"_185":3.0,"_205":7426.0,"_206":624.0,"_207":3484.0,"_208":4260.0,"_209":3.0,"_212":7.0,"_214":100.0,"_213":700.0,"_215":200.0,"_219":131.0,"_220":45.0,"_221":5.0,"_193":1111.0,"_199":1016.0,"_198":458.0,"_194":540.0,"_195":442.0,"_191":864.0,"_197":496.0,"_189":300.0,"_196":292.0,"_192":546.0,"_200":1192.0,"_202":1207.0,"_190":2182.0,"_201":8920.0,"_186":5.0,"_187":3.0,"_188":2.0,"_233":18.0,"_234":8.0,"_235":8.0,"_236":1.0,"_237":17.0,"_238":4.0,"_239":17.0};
-const CAT_ORDER   = ["INSUMOS PASTELERÍA", "GRECA (CAFÉ)", "DESECHABLES Y EMPAQUES", "ASEO", "DECORACIÓN", "BEBIDAS NEVERA"];
+/* ── DATA ── */
+const PRODS_DB  = [{"id":1,"description":"Aceite","category":"INSUMOS PASTELERÍA","unit":"ml","cost":7.1},{"id":2,"description":"Alcohol","category":"INSUMOS PASTELERÍA","unit":"g","cost":7.95},{"id":3,"description":"Almendras","category":"INSUMOS PASTELERÍA","unit":"g","cost":24.0},{"id":4,"description":"Ambientador","category":"INSUMOS PASTELERÍA","unit":"g","cost":2.55},{"id":5,"description":"arandanos","category":"INSUMOS PASTELERÍA","unit":"g","cost":58.33},{"id":6,"description":"Arepa Harina","category":"INSUMOS PASTELERÍA","unit":"g","cost":30.4},{"id":7,"description":"Arequipe","category":"INSUMOS PASTELERÍA","unit":"g","cost":11.228},{"id":8,"description":"Avena en hojuelas","category":"INSUMOS PASTELERÍA","unit":"g","cost":32.0},{"id":9,"description":"Azúcar corriente","category":"INSUMOS PASTELERÍA","unit":"g","cost":3.24},{"id":10,"description":"Azúcar pulverizada R/paila","category":"INSUMOS PASTELERÍA","unit":"g","cost":5.4},{"id":11,"description":"Azúcar pulverizada Santillana","category":"INSUMOS PASTELERÍA","unit":"g","cost":6.53},{"id":12,"description":"Banano","category":"INSUMOS PASTELERÍA","unit":"g","cost":3.0},{"id":13,"description":"Bandeja negra #1","category":"INSUMOS PASTELERÍA","unit":"Und","cost":108.5},{"id":14,"description":"Barquillo piazza","category":"INSUMOS PASTELERÍA","unit":"Und","cost":225.0},{"id":15,"description":"Bicarbonato de sodio","category":"INSUMOS PASTELERÍA","unit":"g","cost":5.9},{"id":16,"description":"Brillo tornasol","category":"INSUMOS PASTELERÍA","unit":"g","cost":26.0},{"id":17,"description":"Café instantaneo","category":"INSUMOS PASTELERÍA","unit":"g","cost":131.5},{"id":18,"description":"Caneca ron","category":"INSUMOS PASTELERÍA","unit":"Und","cost":23000.0},{"id":19,"description":"Canela en astilla","category":"INSUMOS PASTELERÍA","unit":"g","cost":166.67},{"id":20,"description":"Canela polvo","category":"INSUMOS PASTELERÍA","unit":"g","cost":62.0},{"id":21,"description":"Cerezas promedio x unidad 3.6g","category":"INSUMOS PASTELERÍA","unit":"g","cost":32.5},{"id":22,"description":"Chips de chocolate blanco","category":"INSUMOS PASTELERÍA","unit":"g","cost":41.99},{"id":23,"description":"Chips de chocolate negro","category":"INSUMOS PASTELERÍA","unit":"g","cost":33.9},{"id":24,"description":"Chocolate barra blanco puratos","category":"INSUMOS PASTELERÍA","unit":"g","cost":33.0},{"id":25,"description":"Chocolate barra negro puratos","category":"INSUMOS PASTELERÍA","unit":"g","cost":26.5},{"id":26,"description":"Chocolate ferrero","category":"INSUMOS PASTELERÍA","unit":"Und","cost":4700.0},{"id":27,"description":"Chocolate monedas","category":"INSUMOS PASTELERÍA","unit":"g","cost":25.4},{"id":28,"description":"Chocubierta chocolate liquido","category":"INSUMOS PASTELERÍA","unit":"g","cost":26.75},{"id":29,"description":"CMC","category":"INSUMOS PASTELERÍA","unit":"g","cost":50.4},{"id":30,"description":"Cobertura blanca","category":"INSUMOS PASTELERÍA","unit":"g","cost":40.0},{"id":31,"description":"Cobertura negra","category":"INSUMOS PASTELERÍA","unit":"g","cost":8.75},{"id":32,"description":"Cocoa","category":"INSUMOS PASTELERÍA","unit":"g","cost":59.15},{"id":33,"description":"Colmaíz","category":"INSUMOS PASTELERÍA","unit":"g","cost":5.8},{"id":34,"description":"Color caramelo","category":"INSUMOS PASTELERÍA","unit":"g","cost":12.7},{"id":35,"description":"Color en gel varios colores","category":"INSUMOS PASTELERÍA","unit":"ml","cost":366.67},{"id":36,"description":"Color gotero varios colores","category":"INSUMOS PASTELERÍA","unit":"ml","cost":216.67},{"id":37,"description":"Colorante Rojo escarlata","category":"INSUMOS PASTELERÍA","unit":"g","cost":49.0},{"id":38,"description":"Concentrado de arándanos","category":"INSUMOS PASTELERÍA","unit":"g","cost":78.5},{"id":39,"description":"Concentrado de limón","category":"INSUMOS PASTELERÍA","unit":"g","cost":44.0},{"id":40,"description":"Concentrado de naranja","category":"INSUMOS PASTELERÍA","unit":"g","cost":68.8},{"id":41,"description":"Crema base","category":"INSUMOS PASTELERÍA","unit":"g","cost":17.5},{"id":42,"description":"Crema de leche","category":"INSUMOS PASTELERÍA","unit":"g","cost":17.14},{"id":43,"description":"Crema para decorar Kellers x 2 lt","category":"INSUMOS PASTELERÍA","unit":"Tarro","cost":35000.0},{"id":44,"description":"Cucurucho","category":"INSUMOS PASTELERÍA","unit":"Und","cost":220.0},{"id":45,"description":"Dióxido de titanio","category":"INSUMOS PASTELERÍA","unit":"g","cost":146.4},{"id":46,"description":"Durazno","category":"INSUMOS PASTELERÍA","unit":"g","cost":13.78},{"id":47,"description":"Emulsificante","category":"INSUMOS PASTELERÍA","unit":"g","cost":26.16},{"id":48,"description":"Escarcha","category":"INSUMOS PASTELERÍA","unit":"g","cost":26.0},{"id":49,"description":"Esencia de arequipe","category":"INSUMOS PASTELERÍA","unit":"ml","cost":33.0},{"id":50,"description":"Esencia de café Promapan","category":"INSUMOS PASTELERÍA","unit":"ml","cost":33.0},{"id":51,"description":"Esencia de café Santillana","category":"INSUMOS PASTELERÍA","unit":"ml","cost":30.0},{"id":52,"description":"Esencia de canela","category":"INSUMOS PASTELERÍA","unit":"ml","cost":33.0},{"id":53,"description":"Esencia de chocolate","category":"INSUMOS PASTELERÍA","unit":"ml","cost":20.1},{"id":54,"description":"Esencia de crema de whiskey","category":"INSUMOS PASTELERÍA","unit":"ml","cost":33.0},{"id":55,"description":"Esencia de hinojo","category":"INSUMOS PASTELERÍA","unit":"ml","cost":35.5},{"id":56,"description":"Esencia de ponqué","category":"INSUMOS PASTELERÍA","unit":"ml","cost":33.0},{"id":57,"description":"Esencia de vainilla","category":"INSUMOS PASTELERÍA","unit":"ml","cost":20.1},{"id":58,"description":"Esencia naranja","category":"INSUMOS PASTELERÍA","unit":"ml","cost":22.6},{"id":59,"description":"Esencia ron con pasas","category":"INSUMOS PASTELERÍA","unit":"ml","cost":33.0},{"id":60,"description":"Ferrero roché","category":"INSUMOS PASTELERÍA","unit":"Und","cost":1200.0},{"id":61,"description":"Figuras tarritos","category":"INSUMOS PASTELERÍA","unit":"g","cost":190.0},{"id":62,"description":"fresa grande","category":"INSUMOS PASTELERÍA","unit":"Und","cost":476.19},{"id":63,"description":"fresa mediana","category":"INSUMOS PASTELERÍA","unit":"Und","cost":204.55},{"id":64,"description":"fresa para mermelada","category":"INSUMOS PASTELERÍA","unit":"g","cost":10.99},{"id":65,"description":"Fruta cristalizada","category":"INSUMOS PASTELERÍA","unit":"g","cost":13.2},{"id":66,"description":"Frutos amarillos para mermelada","category":"INSUMOS PASTELERÍA","unit":"g","cost":9.33},{"id":67,"description":"Frutos rojos para mermelada","category":"INSUMOS PASTELERÍA","unit":"g","cost":16.45},{"id":68,"description":"Fécula","category":"INSUMOS PASTELERÍA","unit":"g","cost":4.64},{"id":69,"description":"Galleta minichips","category":"INSUMOS PASTELERÍA","unit":"Und","cost":93.75},{"id":70,"description":"Galleta recreo","category":"INSUMOS PASTELERÍA","unit":"g","cost":491.6667},{"id":71,"description":"Galleta triturada","category":"INSUMOS PASTELERÍA","unit":"g","cost":30.93},{"id":72,"description":"Gelatina sin sabor","category":"INSUMOS PASTELERÍA","unit":"g","cost":72.0},{"id":73,"description":"Glaseado","category":"INSUMOS PASTELERÍA","unit":"g","cost":7.92},{"id":74,"description":"Glicerina","category":"INSUMOS PASTELERÍA","unit":"g","cost":13.94},{"id":75,"description":"Glucosa","category":"INSUMOS PASTELERÍA","unit":"g","cost":16.6},{"id":76,"description":"Gomas trululu x 40g","category":"INSUMOS PASTELERÍA","unit":"g","cost":32.5},{"id":77,"description":"Gragea","category":"INSUMOS PASTELERÍA","unit":"g","cost":10.8},{"id":78,"description":"Grageas figuras","category":"INSUMOS PASTELERÍA","unit":"g","cost":13.6},{"id":79,"description":"Granulado de colores m&m","category":"INSUMOS PASTELERÍA","unit":"g","cost":77.18},{"id":80,"description":"Granulado lluvia chocolate","category":"INSUMOS PASTELERÍA","unit":"g","cost":46.264},{"id":81,"description":"Granulado lluvia colores","category":"INSUMOS PASTELERÍA","unit":"g","cost":52.308},{"id":82,"description":"Harina de almendras","category":"INSUMOS PASTELERÍA","unit":"g","cost":68.0},{"id":83,"description":"Harina haz de oros","category":"INSUMOS PASTELERÍA","unit":"g","cost":2.72},{"id":84,"description":"Hidrogenada Palmares","category":"INSUMOS PASTELERÍA","unit":"g","cost":7.73},{"id":85,"description":"Huevos","category":"INSUMOS PASTELERÍA","unit":"Und","cost":433.0},{"id":86,"description":"Leche en polvo","category":"INSUMOS PASTELERÍA","unit":"g","cost":23.33},{"id":87,"description":"Leche líquida","category":"INSUMOS PASTELERÍA","unit":"ml","cost":3.75},{"id":88,"description":"Licor de café","category":"INSUMOS PASTELERÍA","unit":"g","cost":30.0},{"id":89,"description":"Limón","category":"INSUMOS PASTELERÍA","unit":"Und","cost":200.0},{"id":90,"description":"Mamut","category":"INSUMOS PASTELERÍA","unit":"Und","cost":180.0},{"id":91,"description":"Mantequilla","category":"INSUMOS PASTELERÍA","unit":"g","cost":48.6},{"id":92,"description":"Maní","category":"INSUMOS PASTELERÍA","unit":"g","cost":17.0},{"id":93,"description":"maracuya fruta","category":"INSUMOS PASTELERÍA","unit":"g","cost":20.75},{"id":94,"description":"Margarina 5A","category":"INSUMOS PASTELERÍA","unit":"g","cost":9.27},{"id":95,"description":"Merengue","category":"INSUMOS PASTELERÍA","unit":"g","cost":30.0},{"id":96,"description":"Mermelada de durazno","category":"INSUMOS PASTELERÍA","unit":"g","cost":9.26},{"id":97,"description":"Milo x 2500g","category":"INSUMOS PASTELERÍA","unit":"g","cost":35.2},{"id":98,"description":"Mixo x 2500g","category":"INSUMOS PASTELERÍA","unit":"g","cost":23.2},{"id":99,"description":"Mora","category":"INSUMOS PASTELERÍA","unit":"g","cost":9.29},{"id":100,"description":"Nuez","category":"INSUMOS PASTELERÍA","unit":"g","cost":76.0},{"id":101,"description":"piña","category":"INSUMOS PASTELERÍA","unit":"g","cost":5.98},{"id":102,"description":"Polvo dorado","category":"INSUMOS PASTELERÍA","unit":"g","cost":320.0},{"id":103,"description":"Polvo para hornear","category":"INSUMOS PASTELERÍA","unit":"g","cost":20.2},{"id":104,"description":"Premezcla bizcochuelo","category":"INSUMOS PASTELERÍA","unit":"g","cost":16.0},{"id":105,"description":"Premezcla zanahoria","category":"INSUMOS PASTELERÍA","unit":"g","cost":3.04},{"id":106,"description":"Queso crema","category":"INSUMOS PASTELERÍA","unit":"g","cost":21.28},{"id":107,"description":"Queso cuajada","category":"INSUMOS PASTELERÍA","unit":"g","cost":15.8},{"id":108,"description":"Relleno de maracuyá","category":"INSUMOS PASTELERÍA","unit":"g","cost":9.73},{"id":109,"description":"Relleno fresa","category":"INSUMOS PASTELERÍA","unit":"g","cost":8.0},{"id":110,"description":"Relleno frutos rojos","category":"INSUMOS PASTELERÍA","unit":"g","cost":8.0},{"id":111,"description":"Relleno maracuyá","category":"INSUMOS PASTELERÍA","unit":"g","cost":5.63},{"id":112,"description":"Relleno mora","category":"INSUMOS PASTELERÍA","unit":"g","cost":8.0},{"id":113,"description":"Sal","category":"INSUMOS PASTELERÍA","unit":"g","cost":3.0},{"id":114,"description":"Semillas de amapola","category":"INSUMOS PASTELERÍA","unit":"g","cost":78.0},{"id":115,"description":"Sorbato de potasio","category":"INSUMOS PASTELERÍA","unit":"g","cost":34.8},{"id":116,"description":"Vinagre","category":"INSUMOS PASTELERÍA","unit":"ml","cost":2.51},{"id":117,"description":"Vino","category":"INSUMOS PASTELERÍA","unit":"ml","cost":7.0},{"id":118,"description":"Vitina","category":"INSUMOS PASTELERÍA","unit":"g","cost":10.4664},{"id":119,"description":"Zanahoria","category":"INSUMOS PASTELERÍA","unit":"g","cost":6.0},{"id":120,"description":"Zumo de limón","category":"INSUMOS PASTELERÍA","unit":"ml","cost":5.0},{"id":121,"description":"Ácido sorbico","category":"INSUMOS PASTELERÍA","unit":"g","cost":31.3},{"id":122,"description":"Azúcar en sobres","category":"GRECA (CAFÉ)","unit":"g","cost":7.0},{"id":123,"description":"cafe en grano","category":"GRECA (CAFÉ)","unit":"g","cost":49.6},{"id":124,"description":"Blonda # 15.5","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":135.0},{"id":125,"description":"Blonda # 17","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":156.75},{"id":126,"description":"Blonda # 21","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":234.75},{"id":127,"description":"Blonda # 24.5","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":223.0},{"id":128,"description":"Blonda # 26","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":360.5},{"id":129,"description":"Blonda # 30","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":448.5},{"id":130,"description":"Bolsa 7x12","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":18.5},{"id":131,"description":"Bolsa aluminio","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":24.6},{"id":132,"description":"Bolsa p&P","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":147.0},{"id":133,"description":"Bolsa t15","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":64.0},{"id":134,"description":"Bolsa t25","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":90.0},{"id":135,"description":"Bolsa t30","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":30.0},{"id":136,"description":"Bolsa t40","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":120.0},{"id":137,"description":"Caja maletin 1/2 Distriuno","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":1450.0},{"id":138,"description":"Caja maletin 1/2 Isafrut","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":1250.0},{"id":139,"description":"Caja maletin 1/4","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":1700.0},{"id":140,"description":"Caja maletin dos libras","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":3850.0},{"id":141,"description":"Caja maletin libra","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":2300.0},{"id":142,"description":"Caja maletin libra y media","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":3200.0},{"id":143,"description":"Capacillos #2","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":260.0},{"id":144,"description":"Capacillos #5","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":330.0},{"id":145,"description":"Cartulina escarchada","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":3100.0},{"id":146,"description":"Cuchara Bon yurt","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":75.0},{"id":147,"description":"cuchara peq x100","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":26.0},{"id":148,"description":"Cuchara sopera","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":65.1},{"id":149,"description":"Domo #17","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":1542.0},{"id":150,"description":"Domo #22","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":2589.0},{"id":151,"description":"Domo #28 libra","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":2862.0},{"id":152,"description":"Domo 1 1/2","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":4950.0},{"id":153,"description":"Domo milhojas x 50 und","category":"DESECHABLES Y EMPAQUES","unit":"Paquete","cost":350.0},{"id":154,"description":"DomoMinipack cuadrado caja genovesa","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":629.5},{"id":155,"description":"Estras cm","category":"DESECHABLES Y EMPAQUES","unit":"cm","cost":55.0},{"id":156,"description":"Facturero","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":2500.0},{"id":157,"description":"Lámina icopor #20","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":8500.0},{"id":158,"description":"mezclador de madera","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":8.2},{"id":159,"description":"Molde aluminio  Cup cake x 50und","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":172.0},{"id":160,"description":"Molde aluminio mini lasagna","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":270.0},{"id":161,"description":"P.P 4x8","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":19.5},{"id":162,"description":"Palillo de dientes","category":"DESECHABLES Y EMPAQUES","unit":"Caja","cost":750.0},{"id":163,"description":"Palillo hamburguesa","category":"DESECHABLES Y EMPAQUES","unit":"Caja","cost":1440.0},{"id":164,"description":"Papel metalizado pliego","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":1300.0},{"id":165,"description":"Pincho 30cm x100 und","category":"DESECHABLES Y EMPAQUES","unit":"Paquete","cost":6100.0},{"id":166,"description":"Porta cupcake","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":428.75},{"id":167,"description":"Porta cupcake x 2","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":1650.0},{"id":168,"description":"Porta cupcake x 4","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":1650.0},{"id":169,"description":"Porta cupcake x 6","category":"DESECHABLES Y EMPAQUES","unit":"Und","cost":1650.0},{"id":170,"description":"Porta globo soporte torta","category":"DESECHABLES Y EMPAQUES","unit":"Paquete","cost":20000.0},{"id":171,"description":"Vinipel","category":"DESECHABLES Y EMPAQUES","unit":"Rollo","cost":48900.0},{"id":172,"description":"Bolsa basura","category":"ASEO","unit":"Und","cost":290.3333},{"id":173,"description":"desengrasante","category":"ASEO","unit":"ml","cost":3.47},{"id":174,"description":"deterpisos ambientador","category":"ASEO","unit":"ml","cost":2.74},{"id":175,"description":"Guantes","category":"ASEO","unit":"Caja","cost":7000.0},{"id":176,"description":"hipoclorito","category":"ASEO","unit":"ml","cost":3.52},{"id":177,"description":"jabon de manos","category":"ASEO","unit":"ml","cost":4.41},{"id":178,"description":"jabon neutro","category":"ASEO","unit":"ml","cost":4.45},{"id":179,"description":"Toalla manos","category":"ASEO","unit":"Und","cost":3500.0},{"id":180,"description":"Caja volcán","category":"DECORACIÓN","unit":"Und","cost":1312.5},{"id":181,"description":"Cinta estampada 50 cm","category":"DECORACIÓN","unit":"Und","cost":3900.0},{"id":182,"description":"Cinta impronta","category":"DECORACIÓN","unit":"cm","cost":8.0},{"id":183,"description":"Cinta metalizada 25 cm","category":"DECORACIÓN","unit":"cm","cost":2286.0},{"id":184,"description":"Cinta metalizada 50 cm","category":"DECORACIÓN","unit":"cm","cost":4572.0},{"id":185,"description":"Cinta texturizada escarchada 50 cm","category":"DECORACIÓN","unit":"cm","cost":4572.0},{"id":186,"description":"Coronas Grandes","category":"DECORACIÓN","unit":"Und","cost":4000.0},{"id":187,"description":"Coronas Medianas","category":"DECORACIÓN","unit":"Und","cost":3200.0},{"id":188,"description":"Coronas pequeñas","category":"DECORACIÓN","unit":"Und","cost":1800.0},{"id":189,"description":"Esfera color amarillo","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":190,"description":"Esfera color azul","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":191,"description":"Esfera color beige","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":192,"description":"Esfera color blanco y negro","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":193,"description":"Esfera color dorado","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":194,"description":"Esfera color gris","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":195,"description":"Esfera color lila","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":196,"description":"Esfera color lila claro","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":197,"description":"Esfera color marron","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":198,"description":"Esfera color plata","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":199,"description":"Esfera color rojo","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":200,"description":"Esfera color rosa","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":201,"description":"Esfera color variado","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":202,"description":"Esfera color verde","category":"DECORACIÓN","unit":"Caja","cost":13.0},{"id":203,"description":"Feliz cum Volcan","category":"DECORACIÓN","unit":"Und","cost":2700.0},{"id":204,"description":"Foami liso pliego","category":"DECORACIÓN","unit":"Und","cost":3600.0},{"id":205,"description":"Perla dorada #2 precio 1","category":"DECORACIÓN","unit":"g","cost":40.0},{"id":206,"description":"Perla dorada #2 precio 2","category":"DECORACIÓN","unit":"g","cost":45.0},{"id":207,"description":"Perla dorada #4","category":"DECORACIÓN","unit":"g","cost":52.0},{"id":208,"description":"Perla dorada #8","category":"DECORACIÓN","unit":"g","cost":53.6},{"id":209,"description":"Plato desechable 23cm x 20","category":"DECORACIÓN","unit":"Und","cost":7600.0},{"id":210,"description":"Plato pando # 15.5","category":"DECORACIÓN","unit":"Und","cost":120.0},{"id":211,"description":"Resma papel carta","category":"DECORACIÓN","unit":"Und","cost":23.6},{"id":212,"description":"Servilleta","category":"DECORACIÓN","unit":"Und","cost":9.45},{"id":213,"description":"Silicona barra","category":"DECORACIÓN","unit":"g","cost":35.7143},{"id":214,"description":"Silicona líquida","category":"DECORACIÓN","unit":"g","cost":35.0},{"id":215,"description":"Tapa bandeja negra-domo","category":"DECORACIÓN","unit":"Und","cost":531.5},{"id":216,"description":"Topper comestible","category":"DECORACIÓN","unit":"Und","cost":1250.0},{"id":217,"description":"Topper digital cupcake","category":"DECORACIÓN","unit":"Und","cost":583.0},{"id":218,"description":"Topper digital tortas","category":"DECORACIÓN","unit":"Und","cost":10000.0},{"id":219,"description":"Topper madera","category":"DECORACIÓN","unit":"Und","cost":3000.0},{"id":220,"description":"Topper volcan meme","category":"DECORACIÓN","unit":"Und","cost":3300.0},{"id":221,"description":"Vaso desechable 7 oz","category":"DECORACIÓN","unit":"Und","cost":2107.0},{"id":222,"description":"Vela Candle","category":"DECORACIÓN","unit":"Paquete","cost":1800.0},{"id":223,"description":"Vela Festella","category":"DECORACIÓN","unit":"Paquete","cost":1800.0},{"id":224,"description":"Vela happy","category":"DECORACIÓN","unit":"Paquete","cost":1800.0},{"id":225,"description":"Vela negra","category":"DECORACIÓN","unit":"Und","cost":1575.0},{"id":226,"description":"Vela número","category":"DECORACIÓN","unit":"Und","cost":1750.0},{"id":227,"description":"Vela Party","category":"DECORACIÓN","unit":"Paquete","cost":1800.0},{"id":228,"description":"Vela pequeña  x8 und","category":"DECORACIÓN","unit":"Paquete","cost":1800.0},{"id":229,"description":"Vela pequeña variada x 24 und","category":"DECORACIÓN","unit":"Paquete","cost":1800.0},{"id":230,"description":"Vela plateada","category":"DECORACIÓN","unit":"Und","cost":1920.0},{"id":231,"description":"Vela viejito","category":"DECORACIÓN","unit":"Und","cost":4000.0},{"id":232,"description":"Vela volcán","category":"DECORACIÓN","unit":"Und","cost":1250.0},{"id":233,"description":"agua botellax600","category":"BEBIDAS NEVERA","unit":"Und","cost":1333.33},{"id":234,"description":"bretaña 1.5","category":"BEBIDAS NEVERA","unit":"Und","cost":3750.0},{"id":235,"description":"cerveza club colombia","category":"BEBIDAS NEVERA","unit":"Und","cost":3416.67},{"id":236,"description":"coca-cola 1.5","category":"BEBIDAS NEVERA","unit":"Und","cost":5416.67},{"id":237,"description":"coca-cola personal x400","category":"BEBIDAS NEVERA","unit":"Und","cost":2500.0},{"id":238,"description":"gaseosa 2.5 postobon","category":"BEBIDAS NEVERA","unit":"Und","cost":4587.5},{"id":239,"description":"Hit x 500 ml","category":"BEBIDAS NEVERA","unit":"Und","cost":2333.0}];
+const INIT_QTY  = {"_1":30794.0,"_5":78.0,"_7":21672.0,"_9":50000.0,"_11":22406.0,"_13":450.0,"_14":9.0,"_15":1930.0,"_16":736.0,"_17":880.0,"_18":0.5,"_20":456.0,"_21":3600.0,"_22":1342.0,"_23":1980.0,"_24":11000.0,"_25":592.0,"_28":16400.0,"_29":500.0,"_30":400.0,"_32":3694.0,"_34":9078.0,"_35":354.0,"_36":4041.0,"_37":1014.0,"_38":1676.0,"_40":3044.0,"_42":15912.0,"_43":1.5,"_44":10.0,"_45":577.0,"_47":4452.0,"_48":1060.0,"_49":3440.0,"_52":2210.0,"_53":4262.0,"_55":604.0,"_56":11800.0,"_57":280.0,"_58":2652.0,"_59":3950.0,"_60":4.0,"_61":200.0,"_65":2486.0,"_68":10592.0,"_70":15.0,"_71":2704.0,"_72":1366.0,"_74":4964.0,"_75":4826.0,"_76":80.0,"_77":5379.0,"_78":1506.0,"_79":458.0,"_80":1010.0,"_81":4422.0,"_83":45000.0,"_84":20340.0,"_85":189.0,"_86":9240.0,"_87":35800.0,"_88":3210.0,"_89":288.0,"_90":20.0,"_92":5800.0,"_94":35474.0,"_97":2092.0,"_98":2192.0,"_100":1376.0,"_102":492.0,"_103":6904.0,"_106":2778.0,"_108":8000.0,"_109":12300.0,"_112":4100.0,"_114":158.0,"_115":614.0,"_116":2162.0,"_117":19804.0,"_118":2594.0,"_119":1170.0,"_121":1000.0,"_123":500.0,"_124":288.0,"_125":143.0,"_126":6.0,"_128":179.0,"_129":232.0,"_130":1600.0,"_131":310.0,"_132":1200.0,"_133":300.0,"_134":300.0,"_135":600.0,"_136":200.0,"_137":82.0,"_139":79.0,"_140":12.0,"_141":49.0,"_142":8.0,"_143":12.0,"_144":40.0,"_147":900.0,"_148":40.0,"_149":50.0,"_150":172.0,"_151":19.0,"_152":7.0,"_153":7.0,"_154":200.0,"_157":3.0,"_159":250.0,"_160":152.0,"_162":10.0,"_163":9.0,"_164":59.0,"_165":3.5,"_166":168.0,"_167":144.0,"_168":128.0,"_169":8.0,"_170":3.0,"_171":1.0,"_172":50.0,"_175":1.0,"_179":1.0,"_180":219.0,"_181":20.0,"_183":15.0,"_184":17.5,"_185":3.0,"_186":5.0,"_187":3.0,"_188":2.0,"_189":300.0,"_190":2182.0,"_191":864.0,"_192":546.0,"_193":1111.0,"_194":540.0,"_195":442.0,"_196":292.0,"_197":496.0,"_198":458.0,"_199":1016.0,"_200":1192.0,"_201":8920.0,"_202":1207.0,"_205":7426.0,"_206":624.0,"_207":3484.0,"_208":4260.0,"_209":3.0,"_212":7.0,"_213":700.0,"_214":100.0,"_215":200.0,"_219":131.0,"_220":45.0,"_221":5.0,"_222":1.0,"_223":12.0,"_224":2.0,"_225":3.0,"_226":48.0,"_227":5.0,"_228":8.0,"_229":6.0,"_230":11.0,"_231":17.0,"_233":18.0,"_234":8.0,"_235":8.0,"_236":1.0,"_237":17.0,"_238":4.0,"_239":17.0};
+const CAT_ORDER = ["INSUMOS PASTELER\u00cdA", "GRECA (CAF\u00c9)", "DESECHABLES Y EMPAQUES", "ASEO", "DECORACI\u00d3N", "BEBIDAS NEVERA"];
 
-let db=null, unsubscribe=null;
-const st={cat:'TODOS',products:null,quantities:{},history:[]};
+/* ── STATE ── */
+let db=null, unsub=null;
+const S={cat:'TODOS',products:null,quantities:{},history:[]};
+
+/* ── UTILS ── */
 const $=id=>document.getElementById(id);
-
-function fmt(n){return(n||n===0)?'$'+Math.round(n).toLocaleString('es-CO'):'';}
-function fmtC(n){const v=Number(n);return'$'+(v%1===0?v.toLocaleString('es-CO'):v.toFixed(4).replace(/0+$/,'').replace(/\.$/,''));}
-function toast(msg,c){const t=$('toast');t.textContent=msg;t.style.background=c||'var(--success)';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
-function getQ(id){const v=st.quantities['_'+id];return(v!=null&&v!=null)?v:'';}
-function hasQ(id){return getQ(id)!=='';}
-function grandTotal(){let t=0;st.products.forEach(p=>{const q=st.quantities['_'+p.id];if(q!=null&&q!=='')t+=q*p.cost;});return Math.round(t);}
-function setSdot(s){const d=$('sdot');d.className='sdot'+(s==='syncing'?' syncing':s==='err'?' err':'');}
-function setSyncLbl(m){$('sync-label').textContent=m;}
+const fmt=n=>(n||n===0)?'$'+Math.round(n).toLocaleString('es-CO'):'';
+const fmtC=n=>{const v=Number(n);return'$'+(v%1===0?v.toLocaleString('es-CO'):v.toFixed(4).replace(/0+$/,'').replace(/\.$/,''));};
+function toast(m,c){const t=$('tk');t.textContent=m;t.style.background=c||'var(--gr)';t.classList.add('sh');setTimeout(()=>t.classList.remove('sh'),2600);}
+const getQ=id=>{const v=S.quantities['_'+id];return(v!=null&&v!=='')?v:'';};
+const hasQ=id=>getQ(id)!=='';
+const grandTotal=()=>Math.round(S.products.reduce((s,p)=>{const q=S.quantities['_'+p.id];return q!=null&&q!==''?s+q*p.cost:s;},0));
+const setSdot=s=>{const d=$('sd');d.className='sd'+(s==='sy'?' sy':s==='er'?' er':'');};
+const setSL=m=>$('sl').textContent=m;
 
 function getCatsSorted(){
-  const cats=new Set(st.products.map(p=>p.category));
-  const ordered=CAT_ORDER.filter(c=>cats.has(c));
-  cats.forEach(c=>{if(!ordered.includes(c))ordered.push(c);});
-  return ordered;
+  const has=new Set(S.products.map(p=>p.category));
+  const r=CAT_ORDER.filter(c=>has.has(c));
+  has.forEach(c=>{if(!r.includes(c))r.push(c);});
+  return r;
 }
-
-function rebuildCatSelect(){
-  const sel=$('new-cat');
-  const current=sel.value;
+function rebuildCatSel(){
+  const sel=$('nc'),cur=sel.value;
   sel.innerHTML=getCatsSorted().map(c=>`<option value="${c}">${c}</option>`).join('');
-  if(current)sel.value=current;
+  if(cur)sel.value=cur;
 }
-
-window.addCategoryPrompt=function(){
-  const name=prompt('Nombre de la nueva categoría:','');
-  if(!name||!name.trim())return;
-  const cat=name.trim().toUpperCase();
-  if(!CAT_ORDER.includes(cat))CAT_ORDER.push(cat);
-  rebuildCatSelect();
-  $('new-cat').value=cat;
-  toast('✅ Categoría "'+cat+'" creada');
+window.newCat=function(){
+  const n=prompt('Nombre de la nueva categoría:','');
+  if(!n||!n.trim())return;
+  const c=n.trim().toUpperCase();
+  if(!CAT_ORDER.includes(c))CAT_ORDER.push(c);
+  rebuildCatSel();$('nc').value=c;
+  toast('✅ Categoría "'+c+'" creada');
 };
 
-// LOGIN
+/* ── LOGIN ── */
 window.doLogin=async function(){
-  const apiKey=$('fb-apikey').value.trim();
-  const projectId=$('fb-projectid').value.trim();
-  if(!apiKey||!projectId){setStatus('Completa API Key y Project ID',true);return;}
-  $('btn-login').disabled=true;setStatus('Conectando...');
+  const ak=$('fak').value.trim(), pi=$('fpi').value.trim();
+  if(!ak||!pi){setLST('Completa API Key y Project ID',true);return;}
+  $('btn-login').disabled=true;setLST('Conectando...');
   try{
-    const app=initializeApp({apiKey,projectId,authDomain:projectId+'.firebaseapp.com'});
+    const app=initializeApp({apiKey:ak,projectId:pi,authDomain:pi+'.firebaseapp.com'});
     db=getFirestore(app);
     const ref=doc(db,'inventario','datos');
     const snap=await getDoc(ref);
     if(snap.exists()&&snap.data().products){
       const d=snap.data();
-      st.products=d.products;st.quantities=d.quantities||{};st.history=d.history||[];
+      S.products=d.products;S.quantities=d.quantities||{};S.history=d.history||[];
     } else {
-      // First time: load from embedded DB + quantities from Excel
-      st.products=PRODUCTS_DB.map(p=>({...p}));
-      st.quantities={...INIT_QTY};
-      // Push initial data to Firebase
-      await setDoc(ref,{products:st.products,quantities:st.quantities,history:st.history,updatedAt:new Date().toISOString()});
+      S.products=PRODS_DB.map(p=>({...p}));
+      S.quantities={...INIT_QTY};
+      await setDoc(ref,{products:S.products,quantities:S.quantities,history:S.history,updatedAt:new Date().toISOString()});
     }
-    try{localStorage.setItem('ds_fb_key',apiKey);localStorage.setItem('ds_fb_pid',projectId);}catch(e){}
+    try{localStorage.setItem('ds_ak',ak);localStorage.setItem('ds_pi',pi);}catch(e){}
     startListener(ref);
-    $('login-screen').style.display='none';$('main-app').style.display='block';
-    setSdot('ok');setSyncLbl('☁️ Conectado a Firebase');
-    rebuildCatSelect();renderCats();renderProds();
-  }catch(err){setStatus('Error: '+err.message,true);$('btn-login').disabled=false;}
+    $('ls').style.display='none';$('app').style.display='block';
+    setSdot('ok');setSL('☁️ Conectado a Firebase');
+    rebuildCatSel();renderCats();renderProds();
+  }catch(err){setLST('Error: '+err.message,true);$('btn-login').disabled=false;}
 };
-function setStatus(msg,err){const el=$('login-status');el.textContent=msg;el.className='login-status'+(err?' err':'');if(!err)$('btn-login').disabled=false;}
+function setLST(m,e){const el=$('lst');el.textContent=m;el.className='lst'+(e?' er':'');if(!e)$('btn-login').disabled=false;}
 
 function startListener(ref){
-  if(unsubscribe)unsubscribe();
-  unsubscribe=onSnapshot(ref,snap=>{
+  if(unsub)unsub();
+  unsub=onSnapshot(ref,snap=>{
     if(!snap.exists())return;
     const d=snap.data();
-    if(JSON.stringify(d.quantities)!==JSON.stringify(st.quantities)||JSON.stringify(d.products)!==JSON.stringify(st.products)){
-      if(d.products)st.products=d.products;
-      st.quantities=d.quantities||{};st.history=d.history||[];
-      rebuildCatSelect();renderCats();renderProds();
-      if($('page-history').classList.contains('active'))renderHist();
-      setSyncLbl('☁️ Actualizado · '+new Date().toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'}));
+    const qStr=JSON.stringify(d.quantities), pStr=JSON.stringify(d.products);
+    if(qStr!==JSON.stringify(S.quantities)||pStr!==JSON.stringify(S.products)){
+      if(d.products)S.products=d.products;
+      S.quantities=d.quantities||{};S.history=d.history||[];
+      rebuildCatSel();renderCats();renderProds();
+      if($('p-history').classList.contains('ac'))renderHist();
+      setSL('☁️ Actualizado · '+new Date().toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'}));
     }
   });
 }
 window.addEventListener('load',async()=>{
-  try{const k=localStorage.getItem('ds_fb_key'),p=localStorage.getItem('ds_fb_pid');if(k&&p){$('fb-apikey').value=k;$('fb-projectid').value=p;await window.doLogin();}}catch(e){}
+  try{const k=localStorage.getItem('ds_ak'),p=localStorage.getItem('ds_pi');if(k&&p){$('fak').value=k;$('fpi').value=p;await window.doLogin();}}catch(e){}
 });
 window.doLogout=function(){
   if(!confirm('¿Cambiar proyecto?'))return;
-  try{localStorage.removeItem('ds_fb_key');localStorage.removeItem('ds_fb_pid');}catch(e){}
-  if(unsubscribe)unsubscribe();db=null;
-  $('main-app').style.display='none';$('login-screen').style.display='flex';
-  $('fb-apikey').value='';$('fb-projectid').value='';$('btn-login').disabled=false;
+  try{localStorage.removeItem('ds_ak');localStorage.removeItem('ds_pi');}catch(e){}
+  if(unsub)unsub();db=null;
+  $('app').style.display='none';$('ls').style.display='flex';
+  $('fak').value='';$('fpi').value='';$('btn-login').disabled=false;
 };
 
-// SYNC
-let saveTimer=null;
-function scheduleSave(){setSdot('syncing');clearTimeout(saveTimer);saveTimer=setTimeout(pushFB,1500);}
+/* ── SYNC ── */
+let saveT=null;
+const scheduleSave=()=>{setSdot('sy');clearTimeout(saveT);saveT=setTimeout(pushFB,1500);};
 async function pushFB(){
-  if(!db)return;setSdot('syncing');setSyncLbl('Guardando...');
+  if(!db)return;setSdot('sy');setSL('Guardando...');
   try{
-    await setDoc(doc(db,'inventario','datos'),{products:st.products,quantities:st.quantities,history:st.history,updatedAt:new Date().toISOString()});
-    setSdot('ok');setSyncLbl('☁️ Guardado · '+new Date().toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'}));
-  }catch(err){setSdot('err');setSyncLbl('⚠️ Error: '+err.message);}
+    await setDoc(doc(db,'inventario','datos'),{products:S.products,quantities:S.quantities,history:S.history,updatedAt:new Date().toISOString()});
+    setSdot('ok');setSL('☁️ Guardado · '+new Date().toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'}));
+  }catch(e){setSdot('er');setSL('⚠️ Error: '+e.message);}
 }
 window.forcSync=async function(){
   if(!db)return;
   const snap=await getDoc(doc(db,'inventario','datos'));
-  if(snap.exists()){const d=snap.data();if(d.products)st.products=d.products;st.quantities=d.quantities||{};st.history=d.history||[];rebuildCatSelect();renderCats();renderProds();setSdot('ok');setSyncLbl('☁️ Actualizado');toast('✅ Datos actualizados');}
+  if(snap.exists()){const d=snap.data();if(d.products)S.products=d.products;S.quantities=d.quantities||{};S.history=d.history||[];rebuildCatSel();renderCats();renderProds();setSdot('ok');setSL('☁️ Actualizado');toast('✅ Datos actualizados');}
 };
 
-// NAV
-window.showPage=function(page){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.ni-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
-  $('nav-'+page).classList.add('active');
+/* ── NAV ── */
+window.go=function(page){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('ac'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('ac'));
+  $('p-'+page).classList.add('ac');$('n-'+page).classList.add('ac');
   if(page==='history')renderHist();
   if(page==='prices')renderPrices();
-  if(page==='settings'){renderSessInfo();rebuildCatSelect();}
+  if(page==='settings'){renderSessInfo();rebuildCatSel();}
 };
 
-// INVENTORY - FIX: usar addEventListener en lugar de oninput attr
+/* ── INVENTORY ── */
 function renderCats(){
-  $('cat-scroll').innerHTML=['TODOS',...getCatsSorted()].map(c=>{
-    const n=st.products.filter(p=>(c==='TODOS'||p.category===c)&&hasQ(p.id)).length;
-    return`<div class="cchip ${st.cat===c?'active':''}" onclick="setC('${c.replace(/'/g,"\'")}')">${c}${n?`<span class="badge">${n}</span>`:''}</div>`;
+  const cats=['TODOS',...getCatsSorted()];
+  $('cats').innerHTML=cats.map(c=>{
+    const n=S.products.filter(p=>(c==='TODOS'||p.category===c)&&hasQ(p.id)).length;
+    return`<div class="cc ${S.cat===c?'ac':''}" data-cat="${c}">${c}${n?`<span class="bg">${n}</span>`:''}</div>`;
   }).join('');
+  // Use event delegation for cat chips to avoid issues
+  $('cats').querySelectorAll('.cc').forEach(el=>{
+    el.addEventListener('click',()=>{S.cat=el.dataset.cat;renderCats();renderProds();});
+  });
 }
-window.setC=function(c){st.cat=c;renderCats();renderProds();};
 
 function renderProds(){
-  const search=($('search-input').value||'').toLowerCase().trim();
-  const list=$('prod-list');
-  let f=st.products.filter(p=>{
-    if(st.cat!=='TODOS'&&p.category!==st.cat)return false;
-    if(search&&!p.description.toLowerCase().includes(search))return false;
+  const search=($('si').value||'').toLowerCase().trim();
+  const list=$('prods');
+  let f=S.products.filter(p=>{
+    if(S.cat!=='TODOS'&&p.category!==S.cat)return false;
+    if(search&&!p.description.toLowerCase().includes(search)&&!p.category.toLowerCase().includes(search))return false;
     return true;
   });
   f.sort((a,b)=>{
@@ -426,296 +430,324 @@ function renderProds(){
     if(aq!==bq)return aq-bq;
     return a.description.localeCompare(b.description,'es');
   });
-  if(!f.length){list.innerHTML='<div class="empty"><div class="empty-icon">🔍</div><p>Sin resultados</p></div>';updateTopbar();return;}
+  if(!f.length){list.innerHTML='<div class="em"><div class="ei">🔍</div><p>Sin resultados</p></div>';updateTop();return;}
   list.innerHTML=f.map(p=>{
     const qty=getQ(p.id),cost=p.cost,total=qty!==''?qty*cost:'';
-    return`<div class="pcard ${qty!==''?'hq':''}" id="card-${p.id}">
-      <div class="ptop">
+    return`<div class="pc ${qty!==''?'hq':''}" id="c${p.id}">
+      <div class="pt">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px">
-          <div style="flex:1;min-width:0"><div class="pname">${p.description}</div><div class="pcat">${p.category}</div></div>
+          <div style="flex:1;min-width:0"><div class="pn">${p.description}</div><div class="pg2">${p.category}</div></div>
           <div style="display:flex;gap:4px;flex-shrink:0">
-            <button onclick="openAddQty(${p.id})" style="background:rgba(192,96,128,.15);border:1px solid var(--gold);color:var(--gold);border-radius:6px;padding:3px 7px;font-size:14px;cursor:pointer;font-weight:700">+</button>
-            <button onclick="openEdit(${p.id})" style="background:rgba(139,77,160,.15);border:1px solid var(--teal);color:var(--teal);border-radius:6px;padding:3px 7px;font-size:12px;cursor:pointer">✏️</button>
-            <button onclick="delProd(${p.id})" style="background:rgba(231,76,60,.1);border:1px solid var(--danger);color:var(--danger);border-radius:6px;padding:3px 7px;font-size:12px;cursor:pointer">🗑️</button>
+            <button onclick="addQ(${p.id})" style="background:rgba(192,96,128,.15);border:1px solid var(--pk);color:var(--pk);border-radius:6px;padding:3px 7px;font-size:14px;cursor:pointer;font-weight:700">+</button>
+            <button onclick="editP(${p.id})" style="background:rgba(139,77,160,.15);border:1px solid var(--pu);color:var(--pu);border-radius:6px;padding:3px 7px;font-size:12px;cursor:pointer">✏️</button>
+            <button onclick="delP(${p.id})" style="background:rgba(231,76,60,.1);border:1px solid var(--re);color:var(--re);border-radius:6px;padding:3px 7px;font-size:12px;cursor:pointer">🗑️</button>
           </div>
         </div>
       </div>
-      <div class="pnums">
-        <div class="pnc"><div class="pnl">Cantidad (${p.unit})</div><div class="pnv qv"><input type="text" inputmode="decimal" class="qin" id="qty-${p.id}" value="${qty}" placeholder="—" onchange="setQty(${p.id},this.value)" oninput="this.value=this.value.replace(',','.')" onfocus="this.select()"></div></div>
-        <div class="pnc"><div class="pnl">Costo/${p.unit}</div><div class="pnv cv" id="cost-${p.id}">${fmtC(cost)}</div></div>
-        <div class="pnc"><div class="pnl">Total $</div><div class="pnv tv" id="tot-${p.id}">${total!==''?fmt(total):'—'}</div></div>
+      <div class="pm">
+        <div class="pmc"><div class="pml">Cantidad (${p.unit})</div><div class="pmv qv"><input type="text" inputmode="decimal" class="qi" id="q${p.id}" value="${qty}" placeholder="—" onfocus="this.select()" onchange="setQ(${p.id},this.value)" oninput="this.value=this.value.replace(',','.')"></div></div>
+        <div class="pmc"><div class="pml">Costo/${p.unit}</div><div class="pmv cv" id="co${p.id}">${fmtC(cost)}</div></div>
+        <div class="pmc"><div class="pml">Total $</div><div class="pmv tv" id="to${p.id}">${total!==''?fmt(total):'—'}</div></div>
       </div>
     </div>`;
   }).join('');
-  updateTopbar();
+  updateTop();
 }
 
-// FIX BUSCADOR: event listener directo
-document.getElementById('search-input').addEventListener('input',renderProds);
-document.getElementById('pr-search').addEventListener('input',renderPrices);
+/* ── FIX: search with real event listeners ── */
+$('si').addEventListener('input',renderProds);
+$('prs').addEventListener('input',renderPrices);
 
-window.setQty=function(id,val){
+window.setQ=function(id,val){
   const v=parseFloat(String(val).replace(',','.'));
   const k='_'+id;
-  if(isNaN(v))delete st.quantities[k];else st.quantities[k]=v;
-  const p=st.products.find(x=>x.id===id);
-  const card=$('card-'+id),tot=$('tot-'+id);
-  if(p&&card&&tot){const q=st.quantities[k],hq=q!=null;card.classList.toggle('hq',hq);tot.textContent=hq?fmt(q*p.cost):'—';}
-  updateTopbar();renderCats();scheduleSave();
+  if(isNaN(v)||val===''||val===null)delete S.quantities[k];else S.quantities[k]=v;
+  const p=S.products.find(x=>x.id===id);
+  const card=$('c'+id),tot=$('to'+id);
+  if(p&&card&&tot){const q=S.quantities[k],hq=q!=null;card.classList.toggle('hq',hq);tot.textContent=hq?fmt(q*p.cost):'—';}
+  updateTop();renderCats();scheduleSave();
 };
-function updateTopbar(){$('topbar-total').textContent=fmt(grandTotal());}
+function updateTop(){$('tt').textContent=fmt(grandTotal());}
 
-window.openAddQty=function(id){
-  const p=st.products.find(x=>x.id===id);if(!p)return;
+window.addQ=function(id){
+  const p=S.products.find(x=>x.id===id);if(!p)return;
   const cur=getQ(id);
   const raw=prompt(cur!==''?`Ya hay ${cur} ${p.unit}. ¿Cuánto más agregas?`:`¿Cuánto agregas? (${p.unit})`);
   if(raw===null||raw.trim()==='')return;
   const add=parseFloat(raw.replace(',','.'));
-  if(isNaN(add)||add<=0){toast('Número inválido','var(--danger)');return;}
+  if(isNaN(add)||add<=0){toast('Número inválido','var(--re)');return;}
   const prev=cur!==''?parseFloat(cur):0;
   const total=Math.round((prev+add)*10000)/10000;
-  window.setQty(id,total);const inp=$('qty-'+id);if(inp)inp.value=total;
+  window.setQ(id,total);const inp=$('q'+id);if(inp)inp.value=total;
   toast('✅ '+prev+' + '+add+' = '+total+' '+p.unit);
 };
-window.openEdit=function(id){
-  const p=st.products.find(x=>x.id===id);if(!p)return;
+window.editP=function(id){
+  const p=S.products.find(x=>x.id===id);if(!p)return;
   const n=prompt('Nombre del insumo:',p.description);
   if(n===null)return;const t=n.trim();if(!t)return;
   p.description=t;scheduleSave();renderProds();renderPrices();toast('✅ Actualizado');
 };
-window.delProd=function(id){
-  const p=st.products.find(x=>x.id===id);if(!p)return;
+window.delP=function(id){
+  const p=S.products.find(x=>x.id===id);if(!p)return;
   if(!confirm('¿Eliminar "'+p.description+'"?'))return;
-  st.products=st.products.filter(x=>x.id!==id);delete st.quantities['_'+id];
+  S.products=S.products.filter(x=>x.id!==id);delete S.quantities['_'+id];
   scheduleSave();renderCats();renderProds();toast('🗑️ Eliminado');
 };
 
-// VOICE
-let recognition=null,isListening=false;
+/* ── VOICE ── */
+let recog=null,isLis=false;
 window.toggleVoice=function(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){toast('Voz no disponible','var(--danger)');return;}
-  if(isListening){recognition&&recognition.stop();return;}
-  recognition=new SR();recognition.lang='es-CO';recognition.continuous=false;recognition.interimResults=false;
-  recognition.onstart=()=>{isListening=true;$('mic-btn').classList.add('listening');toast('🎙️ Escuchando...','var(--teal)');};
-  recognition.onresult=e=>{
-    const text=e.results[0][0].transcript;
-    const num=text.match(/\d+([.,]\d+)?/);const focused=document.activeElement;
-    if(num){const val=parseFloat(num[0].replace(',','.'));
-      if(focused&&focused.classList.contains('qin')){focused.value=val;const id=parseInt(focused.id.replace('qty-',''));window.setQty(id,val);toast('✅ '+val);}
-      else{$('search-input').value=text.replace(num[0],'').trim();renderProds();}
-    }else{$('search-input').value=text;renderProds();}
+  if(!SR){toast('Voz no disponible en este navegador','var(--re)');return;}
+  if(isLis){recog&&recog.stop();return;}
+  recog=new SR();
+  recog.lang='es-CO';recog.continuous=false;recog.interimResults=false;
+  recog.onstart=()=>{isLis=true;$('mic').classList.add('li2');toast('🎙️ Escuchando...','var(--pu)');};
+  recog.onresult=e=>{
+    const text=e.results[0][0].transcript.toLowerCase();
+    const num=text.match(/\d+([.,]\d+)?/);
+    const focused=document.activeElement;
+    if(num){
+      const val=parseFloat(num[0].replace(',','.'));
+      if(focused&&focused.classList.contains('qi')){
+        focused.value=val;
+        const id=parseInt(focused.id.replace('q',''));
+        window.setQ(id,val);toast('✅ '+val+' registrado');
+      } else {
+        const resto=text.replace(num[0],'').trim();
+        $('si').value=resto;renderProds();
+        toast('Toca el campo de cantidad y dicta el número','var(--pk)');
+      }
+    } else {
+      $('si').value=text;renderProds();
+      toast('Buscando: "'+text+'"','var(--pu)');
+    }
   };
-  recognition.onend=()=>{isListening=false;$('mic-btn').classList.remove('listening');};
-  recognition.onerror=()=>{isListening=false;$('mic-btn').classList.remove('listening');};
-  recognition.start();
+  recog.onend=()=>{isLis=false;$('mic').classList.remove('li2');};
+  recog.onerror=e=>{isLis=false;$('mic').classList.remove('li2');toast('Error de voz: '+e.error,'var(--re)');};
+  recog.start();
 };
 
-// PRICES
+/* ── PRICES ── */
 function renderPrices(){
-  const search=($('pr-search').value||'').toLowerCase();
-  const list=$('pr-list');
-  const f=st.products.filter(p=>!search||p.description.toLowerCase().includes(search));
-  if(!f.length){list.innerHTML='<div class="empty"><div class="empty-icon">🔍</div><p>Sin resultados</p></div>';return;}
-  const byCat={};f.forEach(p=>{if(!byCat[p.category])byCat[p.category]=[];byCat[p.category].push(p);});
-  const catsSorted=getCatsSorted().filter(c=>byCat[c]);
-  list.innerHTML=catsSorted.map(cat=>
-    `<div class="stitle">${cat}</div>`+
-    byCat[cat].map(p=>`<div class="prcard">
-      <div class="pri"><div class="prname">${p.description}</div><div class="prunit">Por ${p.unit} · <strong style="color:var(--gold)">${fmtC(p.cost)}</strong></div></div>
-      <input type="number" class="prinput" value="${p.cost}" step="0.0001" min="0" inputmode="decimal" onchange="updPrice(${p.id},this.value)" onfocus="this.select()">
+  const search=($('prs').value||'').toLowerCase();
+  const list=$('prl');
+  const f=S.products.filter(p=>!search||p.description.toLowerCase().includes(search)||p.category.toLowerCase().includes(search));
+  if(!f.length){list.innerHTML='<div class="em"><div class="ei">🔍</div><p>Sin resultados</p></div>';return;}
+  const byCat={};
+  f.forEach(p=>{if(!byCat[p.category])byCat[p.category]=[];byCat[p.category].push(p);});
+  const sorted=getCatsSorted().filter(c=>byCat[c]);
+  list.innerHTML=sorted.map(cat=>
+    `<div class="st2">${cat}</div>`+
+    byCat[cat].map(p=>`<div class="prc">
+      <div class="pri"><div class="prn">${p.description}</div><div class="pru">Por ${p.unit} · <strong style="color:var(--pk)">${fmtC(p.cost)}</strong></div></div>
+      <input type="number" class="pin" value="${p.cost}" step="0.0001" min="0" inputmode="decimal" onchange="updP(${p.id},this.value)" onfocus="this.select()">
     </div>`).join('')
   ).join('');
 }
-window.updPrice=function(id,val){
-  const p=st.products.find(x=>x.id===id);if(!p)return;
+window.updP=function(id,val){
+  const p=S.products.find(x=>x.id===id);if(!p)return;
   p.cost=parseFloat(val)||0;scheduleSave();toast('✅ Precio actualizado');
-  const el=$('cost-'+id);if(el)el.textContent=fmtC(p.cost);updateTopbar();
+  const el=$('co'+id);if(el)el.textContent=fmtC(p.cost);updateTop();
 };
 
-// CALCULADORA
-let calcProd=null,calcMult=1000;
-window.openCalc=function(){calcProd=null;calcMult=1000;['calc-s','calc-p','calc-q'].forEach(id=>$(id).value='');$('calc-res').style.display='none';$('calc-sel').style.display='none';$('cbox').style.display='none';$('modal-calc').classList.add('open');};
-window.closeCalc=function(){$('modal-calc').classList.remove('open');};
-window.searchCalc=function(){
-  const q=$('calc-s').value.toLowerCase(),res=$('calc-res');
+/* ── CALCULADORA ── */
+let calcP=null,calcM=1000;
+window.openCalc=function(){calcP=null;calcM=1000;['cs2','cp','cq'].forEach(id=>$(id).value='');$('cr').style.display='none';$('csel').style.display='none';$('cb').style.display='none';$('m-calc').classList.add('op');};
+window.closeCalc=function(){$('m-calc').classList.remove('op');};
+window.sCalc=function(){
+  const q=$('cs2').value.toLowerCase(),res=$('cr');
   if(!q||q.length<1){res.style.display='none';return;}
-  const m=st.products.filter(p=>p.description.toLowerCase().includes(q)).slice(0,10);
+  const m=S.products.filter(p=>p.description.toLowerCase().includes(q)).slice(0,10);
   if(!m.length){res.style.display='none';return;}
-  res.innerHTML=m.map(p=>`<div onclick="selCalcP(${p.id})" style="padding:9px 12px;cursor:pointer;border-bottom:1px solid var(--border);font-size:13px"><strong>${p.description}</strong> <span style="font-size:10px;color:var(--muted)">${p.unit}</span></div>`).join('');
+  res.innerHTML=m.map(p=>`<div onclick="selC(${p.id})" style="padding:9px 12px;cursor:pointer;border-bottom:1px solid var(--bd);font-size:13px"><strong>${p.description}</strong> <span style="font-size:10px;color:var(--mu)">${p.unit}</span></div>`).join('');
   res.style.display='block';
 };
-window.selCalcP=function(id){const p=st.products.find(x=>x.id===id);if(!p)return;calcProd=p;$('calc-s').value=p.description;$('calc-res').style.display='none';const s=$('calc-sel');s.style.display='block';s.textContent='✅ '+p.description+' · '+p.unit;calcR();};
-window.selU=function(btn,lbl){document.querySelectorAll('.uchip').forEach(b=>b.classList.remove('active'));btn.classList.add('active');calcMult=parseFloat(btn.dataset.m);$('ulbl').textContent=lbl;calcR();};
+window.selC=function(id){const p=S.products.find(x=>x.id===id);if(!p)return;calcP=p;$('cs2').value=p.description;$('cr').style.display='none';const s=$('csel');s.style.display='block';s.textContent='✅ '+p.description+' · '+p.unit;calcR();};
+window.selU=function(btn,lbl){document.querySelectorAll('.uc').forEach(b=>b.classList.remove('ac'));btn.classList.add('ac');calcM=parseFloat(btn.dataset.m);$('ul').textContent=lbl;calcR();};
 window.calcR=function(){
-  const price=parseFloat($('calc-p').value),qty=parseFloat($('calc-q').value);
-  const box=$('cbox');if(!price||!qty){box.style.display='none';return;}
-  const total=qty*calcMult,cpu=price/total;box.style.display='block';
-  $('cval').textContent='$'+cpu.toFixed(4).replace(/0+$/,'').replace(/\.$/,'');
-  $('cdet').textContent='$'+price.toLocaleString('es-CO')+' ÷ '+total.toLocaleString('es-CO')+' = $'+cpu.toFixed(4);
+  const pr=parseFloat($('cp').value),qty=parseFloat($('cq').value);
+  const box=$('cb');if(!pr||!qty){box.style.display='none';return;}
+  const tot=qty*calcM,cpu=pr/tot;box.style.display='block';
+  $('cv').textContent='$'+cpu.toFixed(4).replace(/0+$/,'').replace(/\.$/,'');
+  $('cd2').textContent='$'+pr.toLocaleString('es-CO')+' ÷ '+tot.toLocaleString('es-CO')+' = $'+cpu.toFixed(4);
 };
 window.applyCalc=function(){
-  const price=parseFloat($('calc-p').value),qty=parseFloat($('calc-q').value);
-  if(!price||!qty){toast('Completa precio y cantidad','var(--danger)');return;}
-  if(!calcProd){toast('Selecciona un insumo','var(--danger)');return;}
-  const cpu=price/(qty*calcMult),p=st.products.find(x=>x.id===calcProd.id);if(!p)return;
+  const pr=parseFloat($('cp').value),qty=parseFloat($('cq').value);
+  if(!pr||!qty){toast('Completa precio y cantidad','var(--re)');return;}
+  if(!calcP){toast('Selecciona un insumo','var(--re)');return;}
+  const cpu=pr/(qty*calcM),p=S.products.find(x=>x.id===calcP.id);if(!p)return;
   p.cost=cpu;scheduleSave();renderPrices();window.closeCalc();
   toast('✅ '+p.description+': $'+cpu.toFixed(2)+'/'+p.unit);
 };
 
-// FOTO
-let photoData=[];
-window.openPhoto=function(){photoData=[];$('ph-prev').style.display='none';$('ph-load').style.display='none';$('ph-out').style.display='none';$('ph-file').value='';$('modal-photo').classList.add('open');};
-window.closePhoto=function(){$('modal-photo').classList.remove('open');};
+/* ── FOTO ── */
+let phData=[];
+window.openPhoto=function(){phData=[];$('php').style.display='none';$('phl').style.display='none';$('pho').style.display='none';$('phf').value='';$('m-photo').classList.add('op');};
+window.closePhoto=function(){$('m-photo').classList.remove('op');};
 window.handlePhoto=async function(input){
   const file=input.files[0];if(!file)return;
-  const r=new FileReader();r.onload=e=>{$('ph-img').src=e.target.result;$('ph-prev').style.display='block';};r.readAsDataURL(file);
-  $('ph-load').style.display='block';$('ph-out').style.display='none';
+  const r=new FileReader();r.onload=e=>{$('phi').src=e.target.result;$('php').style.display='block';};r.readAsDataURL(file);
+  $('phl').style.display='block';$('pho').style.display='none';
   const b64=await new Promise((res,rej)=>{const r2=new FileReader();r2.onload=()=>res(r2.result.split(',')[1]);r2.onerror=rej;r2.readAsDataURL(file);});
-  const catalog=st.products.slice(0,200).map(p=>p.description).join(', ');
+  const catalog=S.products.slice(0,200).map(p=>p.description).join(', ');
   try{
     const response=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,messages:[{role:'user',content:[
         {type:'image',source:{type:'base64',media_type:file.type||'image/jpeg',data:b64}},
-        {type:'text',text:'Analiza esta factura de pastelería en Colombia. Extrae TODOS los productos con precios. Calcula costo por unidad mínima: si es por kg ÷1000 para gramos, si es caja de N unidades ÷N, si ya es por unidad déjalo igual. Responde SOLO JSON: [{"nombre_factura":"...","precio_total":30000,"cantidad":12,"unidad_empaque":"unidades","costo_por_unidad":2500,"unidad_minima":"Und","match_sugerido":"nombre en inventario"}]. Catálogo: '+catalog}
+        {type:'text',text:'Analiza esta factura de pastelería en Colombia. Extrae TODOS los productos. Calcula costo por unidad mínima: si es por kg ÷1000 para gramos, si es caja de N unidades ÷N, si ya es por unidad déjalo igual. Responde SOLO JSON: [{"nombre_factura":"...","precio_total":30000,"cantidad":12,"unidad_empaque":"unidades","costo_por_unidad":2500,"unidad_minima":"Und","match_sugerido":"nombre en inventario"}]. Catálogo: '+catalog}
       ]}]})});
-    const data=await response.json();$('ph-load').style.display='none';
+    const data=await response.json();$('phl').style.display='none';
     if(data.error)throw new Error(data.error.message);
     const text=(data.content||[]).map(c=>c.text||'').join('');
     const items=JSON.parse(text.replace(/```json|```/g,'').trim());
-    photoData=items;
-    $('ph-items').innerHTML=items.map((item,idx)=>{
-      const m=st.products.filter(p=>p.description.toLowerCase().includes((item.nombre_factura||''). toLowerCase().split(' ')[0])).slice(0,6);
+    phData=items;
+    $('phitems').innerHTML=items.map((item,idx)=>{
+      const m=S.products.filter(p=>p.description.toLowerCase().includes((item.nombre_factura||'').toLowerCase().split(' ')[0])).slice(0,6);
       const bestId=m.length?m[0].id:'';
-      return`<div class="phitem ${m.length?'matched':''}">
+      return`<div class="phi ${m.length?'mk':''}">
         <div style="font-size:13px;font-weight:700">📦 ${item.nombre_factura}</div>
-        <div style="font-size:11px;color:var(--muted)">$${(item.precio_total||0).toLocaleString('es-CO')} · ${item.cantidad} ${item.unidad_empaque}</div>
-        <div style="font-size:13px;color:var(--gold);font-weight:700">→ $${(item.costo_por_unidad||0).toFixed(4).replace(/0+$/,'').replace(/\.$/,'')} por ${item.unidad_minima}</div>
-        <select class="phmsel" id="pm-${idx}">
+        <div style="font-size:11px;color:var(--mu)">$${(item.precio_total||0).toLocaleString('es-CO')} · ${item.cantidad} ${item.unidad_empaque}</div>
+        <div style="font-size:13px;color:var(--pk);font-weight:700">→ $${(item.costo_por_unidad||0).toFixed(4).replace(/0+$/,'').replace(/\.$/,'')} por ${item.unidad_minima}</div>
+        <select class="phs" id="pm${idx}">
           <option value="">— No aplicar —</option>
-          ${st.products.map(p=>`<option value="${p.id}" ${p.id==bestId?'selected':''}>${p.description}</option>`).join('')}
+          ${S.products.map(p=>`<option value="${p.id}" ${p.id==bestId?'selected':''}>${p.description}</option>`).join('')}
         </select>
       </div>`;
     }).join('');
-    $('ph-out').style.display='block';
-  }catch(err){$('ph-load').style.display='none';toast('Error: '+err.message,'var(--danger)');}
+    $('pho').style.display='block';
+  }catch(e){$('phl').style.display='none';toast('Error: '+e.message,'var(--re)');}
 };
 window.applyPhoto=function(){
-  let n=0;photoData.forEach((item,idx)=>{const sel=$('pm-'+idx);if(!sel||!sel.value)return;const p=st.products.find(x=>x.id===parseInt(sel.value));if(!p||!item.costo_por_unidad)return;p.cost=item.costo_por_unidad;n++;});
-  if(!n){toast('Selecciona al menos uno','var(--danger)');return;}
+  let n=0;phData.forEach((item,idx)=>{const sel=$('pm'+idx);if(!sel||!sel.value)return;const p=S.products.find(x=>x.id===parseInt(sel.value));if(!p||!item.costo_por_unidad)return;p.cost=item.costo_por_unidad;n++;});
+  if(!n){toast('Selecciona al menos uno','var(--re)');return;}
   scheduleSave();renderPrices();window.closePhoto();toast('✅ '+n+' precio(s) actualizados');
 };
 
-// HISTORIAL
+/* ── HISTORIAL ── */
 window.saveSession=async function(){
   const now=new Date();
-  st.history.unshift({id:Date.now(),date:now.toLocaleDateString('es-CO',{year:'numeric',month:'long',day:'numeric'}),time:now.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'}),quantities:{...st.quantities},total:grandTotal()});
-  if(st.history.length>30)st.history.pop();
-  await pushFB();toast('✅ Inventario guardado');
+  S.history.unshift({id:Date.now(),
+    date:now.toLocaleDateString('es-CO',{year:'numeric',month:'long',day:'numeric'}),
+    time:now.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'}),
+    quantities:{...S.quantities},total:grandTotal()});
+  if(S.history.length>30)S.history.pop();
+  await pushFB();toast('✅ Inventario guardado en historial');
 };
 function renderHist(){
-  const el=$('hist-list');
-  if(!st.history.length){el.innerHTML='<div class="empty"><div class="empty-icon">📅</div><p>Sin inventarios guardados</p></div>';return;}
-  el.innerHTML=st.history.map(s=>`<div class="sescard" onclick="loadSes(${s.id})">
-    <div class="sesdate">📅 ${s.date} · ${s.time}</div>
-    <div class="sestot">${fmt(s.total||0)}</div>
+  const el=$('hl');
+  if(!S.history.length){el.innerHTML='<div class="em"><div class="ei">📅</div><p>Sin inventarios guardados</p></div>';return;}
+  el.innerHTML=S.history.map(s=>`<div class="hsc" onclick="loadSes(${s.id})">
+    <div class="hsd">📅 ${s.date} · ${s.time}</div>
+    <div class="hst">${fmt(s.total||0)}</div>
   </div>`).join('');
 }
-window.loadSes=function(id){const s=st.history.find(x=>x.id===id);if(!s||!confirm('¿Cargar este inventario?'))return;st.quantities={...s.quantities};scheduleSave();window.showPage('inv');renderCats();renderProds();toast('✅ Cargado');};
-
-// CONFIG
-function renderSessInfo(){
-  const n=Object.keys(st.quantities).filter(k=>k.startsWith('_')).length;
-  $('sess-info').innerHTML=`🎂 Dulce Sofía Pastelería<br>${n} insumos con cantidad · ${fmt(grandTotal())}`;
-}
-window.clearCurrent=function(){if(!confirm('¿Limpiar TODAS las cantidades?'))return;st.quantities={};scheduleSave();renderCats();renderProds();toast('Cantidades limpiadas');};
-window.addProduct=function(){
-  const name=$('new-name').value.trim();if(!name){toast('Escribe el nombre','var(--danger)');return;}
-  const newId=Math.max(0,...st.products.map(p=>p.id))+1;
-  const cat=$('new-cat').value;
-  if(!CAT_ORDER.includes(cat))CAT_ORDER.push(cat);
-  st.products.push({id:newId,description:name,category:cat,unit:$('new-unit').value,cost:parseFloat($('new-cost').value)||0});
-  $('new-name').value='';$('new-cost').value='';
-  scheduleSave();rebuildCatSelect();renderCats();renderProds();toast('✅ Insumo agregado: '+name);
+window.loadSes=function(id){
+  const s=S.history.find(x=>x.id===id);
+  if(!s||!confirm('¿Cargar este inventario? Reemplazará las cantidades actuales.'))return;
+  S.quantities={...s.quantities};scheduleSave();go('inv');renderCats();renderProds();toast('✅ Inventario cargado');
 };
 
-// EXCEL
+/* ── CONFIG ── */
+function renderSessInfo(){
+  const n=Object.keys(S.quantities).filter(k=>k.startsWith('_')&&S.quantities[k]>0).length;
+  const t=grandTotal();
+  $('ssi').innerHTML=`🎂 Dulce Sofía Pastelería<br><strong style="color:var(--tx)">${n}</strong> insumos con cantidad · <strong style="color:var(--pk)">${fmt(t)}</strong>`;
+}
+window.clearCurrent=function(){
+  if(!confirm('¿Limpiar TODAS las cantidades?'))return;
+  S.quantities={};scheduleSave();renderCats();renderProds();toast('Cantidades limpiadas');
+};
+window.addProd=function(){
+  const name=$('nn').value.trim();if(!name){toast('Escribe el nombre','var(--re)');return;}
+  const newId=Math.max(0,...S.products.map(p=>p.id))+1;
+  const cat=$('nc').value;
+  if(!CAT_ORDER.includes(cat))CAT_ORDER.push(cat);
+  S.products.push({id:newId,description:name,category:cat,unit:$('nu').value,cost:parseFloat($('nco').value)||0});
+  $('nn').value='';$('nco').value='';
+  scheduleSave();rebuildCatSel();renderCats();renderProds();toast('✅ Insumo agregado: '+name);
+};
+
+/* ── EXCEL ── */
 window.exportExcel=function(){
-  const now=new Date(),ds=now.toLocaleDateString('es-CO',{year:'numeric',month:'long',day:'numeric'}),ts=now.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
+  const now=new Date();
+  const ds=now.toLocaleDateString('es-CO',{year:'numeric',month:'long',day:'numeric'});
+  const ts=now.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
   const XL={navy:'1A0E2E',gold:'C06080',teal:'8B4DA0',white:'FFFFFF',light:'F5F0F8',gray:'D8C8E8',text:'1A0E2E'};
-  const sH=(fill,color)=>({font:{bold:true,color:{rgb:color||XL.white},sz:11,name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:fill||XL.navy}},alignment:{horizontal:'center',vertical:'center'},border:{bottom:{style:'medium',color:{rgb:XL.gold}}}});
-  const sD=(fill,bold,align)=>({font:{bold:!!bold,color:{rgb:XL.text},sz:10,name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:fill||XL.white}},alignment:{horizontal:align||'left',vertical:'center'},border:{bottom:{style:'thin',color:{rgb:XL.gray}}}});
-  const sM=(fill,bold)=>({font:{bold:!!bold,color:{rgb:bold?XL.navy:XL.text},sz:10,name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:fill||XL.white}},alignment:{horizontal:'right',vertical:'center'},border:{bottom:{style:'thin',color:{rgb:XL.gray}}}});
+
+  const sH=(f,c)=>({font:{bold:true,color:{rgb:c||XL.white},sz:11,name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:f||XL.navy}},alignment:{horizontal:'center',vertical:'center'},border:{bottom:{style:'medium',color:{rgb:XL.gold}}}});
+  const sD=(f,b,a)=>({font:{bold:!!b,color:{rgb:XL.text},sz:10,name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:f||XL.white}},alignment:{horizontal:a||'left',vertical:'center'},border:{bottom:{style:'thin',color:{rgb:XL.gray}}}});
+  const sM=(f,b)=>({font:{bold:!!b,color:{rgb:b?XL.navy:XL.text},sz:10,name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:f||XL.white}},alignment:{horizontal:'right',vertical:'center'},border:{bottom:{style:'thin',color:{rgb:XL.gray}}}});
   const fN=n=>n!=null?Math.round(n*100)/100:null;
 
   const catsSorted=getCatsSorted();
   const byCat={};
-  st.products.forEach(p=>{if(!byCat[p.category])byCat[p.category]=[];byCat[p.category].push(p);});
+  S.products.forEach(p=>{if(!byCat[p.category])byCat[p.category]=[];byCat[p.category].push(p);});
 
   const ws={},merges=[];let r=0;ws['!rows']=[];
+  const set=(row,col,v,t,z,s)=>{const a=XLSX.utils.encode_cell({r:row,c:col});ws[a]={v,t:t||'s'};if(z)ws[a].z=z;if(s)ws[a].s=s;};
 
-  const setCell=(row,col,v,t,z,s)=>{
-    const addr=XLSX.utils.encode_cell({r:row,c:col});
-    ws[addr]={v,t:t||'s'};if(z)ws[addr].z=z;if(s)ws[addr].s=s;
-  };
-
-  setCell(r,0,'DULCE SOFÍA — PASTELERÍA','s',null,{font:{bold:true,sz:18,color:{rgb:XL.white},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.navy}},alignment:{horizontal:'center',vertical:'center'}});
+  // Título
+  set(r,0,'DULCE SOFÍA — PASTELERÍA','s',null,{font:{bold:true,sz:18,color:{rgb:XL.white},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.navy}},alignment:{horizontal:'center',vertical:'center'}});
   merges.push({s:{r,c:0},e:{r,c:4}});ws['!rows'][r]={hpt:36};r++;
-  setCell(r,0,'INVENTARIO DE INSUMOS  ·  '+ds+'  ·  Hora: '+ts,'s',null,{font:{sz:10,color:{rgb:'666666'},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.light}},alignment:{horizontal:'center'}});
+  set(r,0,'INVENTARIO DE INSUMOS  ·  '+ds+'  ·  Hora: '+ts,'s',null,{font:{sz:10,color:{rgb:'666666'},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.light}},alignment:{horizontal:'center'}});
   merges.push({s:{r,c:0},e:{r,c:4}});ws['!rows'][r]={hpt:18};r+=2;
 
   // Resumen
-  setCell(r,0,'RESUMEN POR CATEGORÍA','s',null,{font:{bold:true,sz:12,color:{rgb:XL.white},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.teal}},alignment:{horizontal:'left'}});
+  set(r,0,'RESUMEN POR CATEGORÍA','s',null,{font:{bold:true,sz:12,color:{rgb:XL.white},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.teal}},alignment:{horizontal:'left'}});
   merges.push({s:{r,c:0},e:{r,c:4}});ws['!rows'][r]={hpt:22};r++;
-  ['Categoría','Insumos con cantidad','Total ($)'].forEach((h,ci)=>{setCell(r,ci,h,'s',null,sH());});
+  ['Categoría','Insumos con cantidad','Total ($)'].forEach((h,ci)=>{set(r,ci,h,'s',null,sH());});
   ws['!rows'][r]={hpt:20};r++;
 
   let grand=0;
   catsSorted.filter(c=>byCat[c]).forEach((cat,i)=>{
     const ps=byCat[cat];let t=0,cnt=0;
-    ps.forEach(p=>{const q=st.quantities['_'+p.id];if(q!=null&&q!==''){t+=q*p.cost;cnt++;}});
+    ps.forEach(p=>{const q=S.quantities['_'+p.id];if(q!=null&&q!==''){t+=q*p.cost;cnt++;}});
     grand+=t;
     const fill=i%2===0?XL.white:XL.light;
-    setCell(r,0,cat,'s',null,sD(fill));
-    setCell(r,1,cnt,'n',null,sD(fill,false,'center'));
-    setCell(r,2,fN(t),'n','"$"#,##0',sM(fill));
+    set(r,0,cat,'s',null,sD(fill));
+    set(r,1,cnt,'n',null,sD(fill,false,'center'));
+    set(r,2,fN(t),'n','"$"#,##0',sM(fill));
     ws['!rows'][r]={hpt:18};r++;
   });
-  setCell(r,0,'TOTAL GENERAL','s',null,{font:{bold:true,sz:12,color:{rgb:XL.gold},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.navy}},alignment:{horizontal:'right'}});
+  // Total resumen
+  set(r,0,'TOTAL GENERAL','s',null,{font:{bold:true,sz:12,color:{rgb:XL.gold},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.navy}},alignment:{horizontal:'right'}});
   merges.push({s:{r,c:0},e:{r,c:1}});
-  setCell(r,2,fN(grand),'n','"$"#,##0',{font:{bold:true,sz:13,color:{rgb:XL.gold},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.navy}},alignment:{horizontal:'right'}});
+  set(r,2,fN(grand),'n','"$"#,##0',{font:{bold:true,sz:13,color:{rgb:XL.gold},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.navy}},alignment:{horizontal:'right'}});
   ws['!rows'][r]={hpt:24};r+=2;
 
   // Detalle
-  setCell(r,0,'DETALLE POR CATEGORÍA','s',null,{font:{bold:true,sz:12,color:{rgb:XL.white},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.teal}},alignment:{horizontal:'left'}});
+  set(r,0,'DETALLE POR CATEGORÍA','s',null,{font:{bold:true,sz:12,color:{rgb:XL.white},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.teal}},alignment:{horizontal:'left'}});
   merges.push({s:{r,c:0},e:{r,c:4}});ws['!rows'][r]={hpt:22};r++;
 
   catsSorted.filter(c=>byCat[c]).forEach(cat=>{
     const ps=byCat[cat];
-    setCell(r,0,cat.toUpperCase(),'s',null,{font:{bold:true,sz:11,color:{rgb:XL.navy},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.light}},alignment:{horizontal:'left'},border:{bottom:{style:'medium',color:{rgb:XL.teal}}}});
+    set(r,0,cat.toUpperCase(),'s',null,{font:{bold:true,sz:11,color:{rgb:XL.navy},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.light}},alignment:{horizontal:'left'},border:{bottom:{style:'medium',color:{rgb:XL.teal}}}});
     merges.push({s:{r,c:0},e:{r,c:4}});ws['!rows'][r]={hpt:20};r++;
-    ['Descripción','Unidad','Cantidad','Costo/Unidad','Total'].forEach((h,ci)=>{setCell(r,ci,h,'s',null,sH(XL.navy,XL.white));});
+    ['Descripción','Unidad','Cantidad','Costo/Unidad','Total'].forEach((h,ci)=>{set(r,ci,h,'s',null,sH(XL.navy,XL.white));});
     ws['!rows'][r]={hpt:18};r++;
     let catT=0,ri=0;
     ps.forEach(p=>{
-      const q=st.quantities['_'+p.id],hasQ=q!=null&&q!=='',cost=p.cost,total=hasQ?fN(q*cost):null;
+      const q=S.quantities['_'+p.id],hq2=q!=null&&q!=='',cost=p.cost,total=hq2?fN(q*cost):null;
       if(total!=null)catT+=q*cost;
-      const fill=hasQ?(ri%2===0?'F0E8F5':'F8F0FC'):(ri%2===0?XL.white:XL.light);
-      setCell(r,0,p.description,'s',null,sD(fill));
-      setCell(r,1,p.unit,'s',null,sD(fill,false,'center'));
-      setCell(r,2,hasQ?fN(q):null,hasQ?'n':'s','#,##0.##',sD(fill,false,'center'));
-      setCell(r,3,fN(cost),'n','"$"#,##0.####',sM(fill));
-      setCell(r,4,total,total!=null?'n':'s','"$"#,##0',sM(fill,hasQ));
+      const fill=hq2?(ri%2===0?'F0E8F5':'F8F0FC'):(ri%2===0?XL.white:XL.light);
+      set(r,0,p.description,'s',null,sD(fill));
+      set(r,1,p.unit,'s',null,sD(fill,false,'center'));
+      set(r,2,hq2?fN(q):null,hq2?'n':'s','#,##0.##',sD(fill,false,'center'));
+      set(r,3,fN(cost),'n','"$"#,##0.####',sM(fill));
+      set(r,4,total,total!=null?'n':'s','"$"#,##0',sM(fill,hq2));
       ws['!rows'][r]={hpt:17};r++;ri++;
     });
-    setCell(r,3,'Subtotal '+cat+':','s',null,sD(XL.light,true,'right'));
-    setCell(r,4,fN(catT),'n','"$"#,##0',{font:{bold:true,sz:10,color:{rgb:XL.navy},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.light}},alignment:{horizontal:'right'},border:{top:{style:'thin',color:{rgb:XL.gray}},bottom:{style:'medium',color:{rgb:XL.navy}}}});
+    // Subtotal categoria
+    set(r,3,'Subtotal '+cat+':','s',null,sD(XL.light,true,'right'));
+    set(r,4,fN(catT),'n','"$"#,##0',{font:{bold:true,sz:10,color:{rgb:XL.navy},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.light}},alignment:{horizontal:'right'},border:{top:{style:'thin',color:{rgb:XL.gray}},bottom:{style:'medium',color:{rgb:XL.navy}}}});
     merges.push({s:{r,c:0},e:{r,c:2}});ws['!rows'][r]={hpt:18};r+=2;
   });
 
-  setCell(r,0,'TOTAL GENERAL DEL INVENTARIO','s',null,{font:{bold:true,sz:13,color:{rgb:XL.white},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.navy}},alignment:{horizontal:'right'}});
+  // TOTAL FINAL
+  set(r,0,'TOTAL GENERAL DEL INVENTARIO','s',null,{font:{bold:true,sz:13,color:{rgb:XL.white},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.navy}},alignment:{horizontal:'right'}});
   merges.push({s:{r,c:0},e:{r,c:3}});
-  setCell(r,4,fN(grand),'n','"$"#,##0',{font:{bold:true,sz:14,color:{rgb:XL.gold},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.navy}},alignment:{horizontal:'right'}});
+  set(r,4,fN(grand),'n','"$"#,##0',{font:{bold:true,sz:14,color:{rgb:XL.gold},name:'Calibri'},fill:{patternType:'solid',fgColor:{rgb:XL.navy}},alignment:{horizontal:'right'}});
   ws['!rows'][r]={hpt:28};
 
   ws['!cols']=[{wch:48},{wch:10},{wch:12},{wch:16},{wch:16}];
@@ -725,7 +757,7 @@ window.exportExcel=function(){
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,'Dulce Sofía');
   XLSX.writeFile(wb,'Inventario_DulceSofia_'+now.toISOString().slice(0,10)+'.xlsx');
-  toast('✅ Excel generado');
+  toast('✅ Informe Excel generado');
 };
 </script>
 </body>
