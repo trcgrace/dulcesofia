@@ -542,16 +542,16 @@ window.delP=function(id){
 /* -- WEIGH (calcular unidades por peso) -- */
 window.openWeigh=function(id){
   const p=S.products.find(x=>x.id===id);if(!p||!p.gramsPerUnit)return;
-  const raw=prompt(\`⚖️ \${p.description}\nCada unidad pesa \${p.gramsPerUnit}g\n\n¿Cuántos gramos pesaron en total?\`);
+  const raw=prompt(`⚖️ ${p.description}\nCada unidad pesa ${p.gramsPerUnit}g\n\n¿Cuántos gramos pesaron en total?`);
   if(raw===null||raw.trim()==='')return;
   const totalG=parseFloat(raw.replace(',','.'));
   if(isNaN(totalG)||totalG<=0){toast('Número inválido','var(--re)');return;}
   const units=Math.round((totalG/p.gramsPerUnit)*100)/100;
-  const confirm2=confirm(\`⚖️ \${totalG}g ÷ \${p.gramsPerUnit}g = \${units} \${p.unit}\n\n¿Guardar \${units} \${p.unit}?\`);
+  const confirm2=confirm(`⚖️ ${totalG}g ÷ ${p.gramsPerUnit}g = ${units} ${p.unit}\n\n¿Guardar ${units} ${p.unit}?`);
   if(!confirm2)return;
   window.setQ(id,units);
   const inp=\$('q'+id);if(inp)inp.value=units;
-  toast(\`⚖️ \${totalG}g → \${units} \${p.unit}\`);
+  toast(`⚖️ ${totalG}g → ${units} ${p.unit}`);
 };
 
 /* -- VOICE -- */
