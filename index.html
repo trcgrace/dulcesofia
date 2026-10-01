@@ -550,7 +550,7 @@ window.openWeigh=function(id){
   const confirm2=confirm(`⚖️ ${totalG}g ÷ ${p.gramsPerUnit}g = ${units} ${p.unit}\n\n¿Guardar ${units} ${p.unit}?`);
   if(!confirm2)return;
   window.setQ(id,units);
-  const inp=\$('q'+id);if(inp)inp.value=units;
+  const inp=$('q'+id);if(inp)inp.value=units;
   toast(`⚖️ ${totalG}g → ${units} ${p.unit}`);
 };
 
