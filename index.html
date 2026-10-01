@@ -346,7 +346,14 @@ window.doLogin=async function(){
       S.deletedIds=d.deletedIds||[];
       // Restore edited names/categories
       S.editedNames=d.editedNames||{};
-      // Apply edited names to catalog
+       S.editedPrices=d.editedPrices||{};
+      // Apply edited prices to catalog
+       Object.entries(S.editedPrices).forEach(([sid,price])=>{
+         const pid=parseInt(sid);
+         const p=S.products.find(x=>x.id===pid);
+         if(p)p.cost=price;
+       });
+       // Apply edited names to catalog
       Object.entries(S.editedNames).forEach(([sid,val])=>{
         const pid=parseInt(sid);
         const p=S.products.find(x=>x.id===pid);
@@ -370,7 +377,7 @@ window.doLogin=async function(){
       S.editedNames={};
     }
     // Always push updated products to Firebase so it stays in sync
-    await setDoc(ref,{products:S.products,quantities:S.quantities,history:S.history,deletedIds:S.deletedIds||[],editedNames:S.editedNames||{},updatedAt:new Date().toISOString()});
+    await setDoc(ref,{products:S.products,quantities:S.quantities,history:S.history,deletedIds:S.deletedIds||[],editedNames:S.editedNames||{},editedPrices:S.editedPrices||{},updatedAt:new Date().toISOString()});
     try{localStorage.setItem('ds_ak',ak);localStorage.setItem('ds_pi',pi);}catch(e){}
     startListener(ref);
     $('ls').style.display='none';$('app').style.display='block';
@@ -416,7 +423,7 @@ const scheduleSave=()=>{setSdot('sy');clearTimeout(saveT);saveT=setTimeout(pushF
 async function pushFB(){
   if(!db)return;setSdot('sy');setSL('Guardando...');
   try{
-    await setDoc(doc(db,'inventario','datos'),{products:S.products,quantities:S.quantities,history:S.history,deletedIds:S.deletedIds||[],editedNames:S.editedNames||{},updatedAt:new Date().toISOString()});
+    await setDoc(doc(db,'inventario','datos'),{products:S.products,quantities:S.quantities,history:S.history,deletedIds:S.deletedIds||[],editedNames:S.editedNames||{},editedPrices:S.editedPrices||{},updatedAt:new Date().toISOString()});
     setSdot('ok');setSL('☁️ Guardado · '+new Date().toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'}));
   }catch(e){setSdot('er');setSL('⚠️ Error: '+e.message);}
 }
@@ -478,7 +485,7 @@ function renderProds(){
       </div>
       <div class="pm">
         <div class="pmc"><div class="pml">Cantidad (${p.unit})</div><div class="pmv qv" style="display:flex;align-items:center;gap:4px"><input type="text" inputmode="decimal" class="qi" id="q${p.id}" value="${qty}" placeholder="—" onfocus="this.select()" onchange="setQ(${p.id},this.value)" oninput="this.value=this.value.replace(',','.');" style="flex:1">${p.gramsPerUnit?`<button onclick="openWeigh(${p.id})" title="Calcular por peso" style="background:rgba(139,77,160,.2);border:1px solid var(--pu);color:var(--pu);border-radius:6px;padding:3px 6px;font-size:13px;cursor:pointer;flex-shrink:0">⚖️</button>`:''}</div></div>
-        <div class="pmc"><div class="pml">Costo/${p.unit}</div><div class="pmv cv" id="co${p.id}">${fmtC(cost)}</div></div>
+        <div class="pmc"><div class="pml">Costo/${p.unit} <button onclick="editPrice(${p.id})" title="Editar precio" style="background:none;border:none;cursor:pointer;font-size:11px;padding:0 2px;opacity:0.7">💰</button></div><div class="pmv cv" id="co${p.id}">${fmtC(cost)}</div></div>
         <div class="pmc"><div class="pml">Total $</div><div class="pmv tv" id="to${p.id}">${total!==''?fmt(total):'—'}</div></div>
       </div>
     </div>`;
@@ -528,6 +535,18 @@ window.editP=function(id){
   if(!S.editedNames)S.editedNames={};
   S.editedNames[id]={description:t,category:p.category};
   p.description=t;scheduleSave();renderCats();renderProds();renderPrices();toast('✅ Actualizado');
+};
+window.editPrice=function(id){
+  const p=S.products.find(x=>x.id===id);if(!p)return;
+  const cur=p.cost;
+  const raw=prompt('Nuevo precio por '+p.unit+' de "'+p.description+'" (actual: $'+cur+'):',''+cur);
+  if(raw===null||raw.trim()==='')return;
+  const val=parseFloat(raw.replace(',','.'));
+  if(isNaN(val)||val<=0){toast('Precio inválido','var(--re)');return;}
+  p.cost=val;
+  if(!S.editedPrices)S.editedPrices={};
+  S.editedPrices[id]=val;
+  scheduleSave();renderProds();renderCats();toast('💰 Precio actualizado');
 };
 window.delP=function(id){
   const p=S.products.find(x=>x.id===id);if(!p)return;
